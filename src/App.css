@@ -1,0 +1,208 @@
+body,
+h1,
+h2,
+h3,
+p {
+  margin: 0;
+  padding: 0;
+}
+
+/* Apply a font-family and background color */
+body {
+  font-family: Arial, sans-serif;
+  background-color: #f0f0f0;
+}
+
+/* Define a global button style */
+button {
+  padding: 10px 20px;
+  background-color: #007bff;
+  color: #fff;
+  border: none;
+  cursor: pointer;
+}
+
+/* Define a common container style */
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 20px;
+}
+.character-container {
+  flex-basis: 0px;
+  flex-grow: 1;
+  padding: 1rem;
+  padding-top: 2rem;
+  min-width: 45rem;
+}
+
+.character-card {
+  border: 1px solid #ccc;
+  background-color: #fff;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.character-card img {
+  max-width: 100%;
+  height: auto;
+}
+
+.character-card p {
+  font-size: 1rem;
+  margin: 8px 0;
+}
+
+/* Disabled style */
+.character-card.disabled {
+  opacity: 0.5;
+  pointer-events: none;
+}
+.character-card.selected {
+  background-color: #ff6b6b; /* Red background color for selected banned picks */
+}
+
+/* Character list container */
+.character-list {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  gap: 20px;
+}
+
+.banned-picks {
+  border: 1px solid #ccc;
+  background-color: #fff;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  display: flex;
+  justify-content: space-between;
+}
+
+.banned-pick-slot:hover {
+  transform: translateY(-2px);
+}
+
+.banned-picks h3 {
+  font-size: 1.2rem;
+  margin: 8px 0;
+}
+
+.banned-pick-slots {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 2px;
+}
+
+.banned-pick-slot {
+  width: 60px;
+  height: 60px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #eee;
+  border: 1px solid #ccc;
+  font-size: 0.8rem;
+  cursor: pointer;
+}
+.banned-pick-slot img {
+  width: 60px;
+  height: 60px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #eee;
+  border: 1px solid #ccc;
+  font-size: 0.8rem;
+  cursor: pointer;
+}
+
+.banned-pick-slot.filled {
+  background-color: #ff6b6b;
+}
+
+.banned-pick-slot.empty:hover {
+  background-color: #ff6b6b;
+  color: #fff;
+}
+.team-members {
+  border: 1px solid #ccc;
+  background-color: #fff;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  transition: transform 0.2s;
+  display: grid;
+}
+
+.team-members:hover {
+  transform: translateY(-1px);
+}
+
+.team-members h3 {
+  font-size: 1.2rem;
+  margin: 8px 0;
+}
+
+.team-member-slots {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  padding: 2rem;
+}
+
+.team-member-slot {
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #eee;
+  border: 1px solid #ccc;
+  font-size: 1.2rem;
+  cursor: pointer;
+}
+
+.team-member-slot.empty:hover {
+  background-color: #6bdaff;
+  color: #fff;
+}
+
+.team-member-slot.filled {
+  background-color: #6bdaff;
+  color: #fff;
+}
+
+.App {
+  font-family: Arial, sans-serif;
+  background-color: #f0f0f0;
+  padding: 20px;
+  text-align: center;
+}
+
+h1 {
+  font-size: 2rem;
+  margin-bottom: 20px;
+}
+
+.teams {
+  display: flex;
+  justify-content: space-around;
+  flex-wrap: wrap;
+}
+
+.team {
+  border: 1px solid #ccc;
+  padding: 16px;
+  background-color: #fff;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  margin: 10px;
+  width: 400px;
+  text-align: center;
+}
+.team:first-child {
+  border: 2px solid #007bff7e;
+}
+.team:last-child {
+  border: 2px solid #ff6b6b7e;
+}
+
+.team h2 {
+  font-size: 1.5rem;
+  margin-bottom: 10px;
+}
