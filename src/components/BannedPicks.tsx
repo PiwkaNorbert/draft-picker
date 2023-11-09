@@ -38,40 +38,6 @@ export function BannedPicks({
     [onRightClick]
   );
 
-  const handleDragStart = useCallback(
-    (event: React.DragEvent<HTMLDivElement>, champion: Champion) => {
-      event.dataTransfer.setData("text/plain", "");
-      event.dataTransfer.setDragImage(event.currentTarget, 0, 0);
-      event.dataTransfer.dropEffect = "move";
-      event.currentTarget.classList.add("dragging");
-      event.dataTransfer.setData("champion", JSON.stringify(champion));
-    },
-    []
-  );
-
-  const handleDragEnd = useCallback(
-    (event: React.DragEvent<HTMLDivElement>) => {
-      event.currentTarget.classList.remove("dragging");
-    },
-    []
-  );
-
-  const handleDragOver = useCallback(
-    (event: React.DragEvent<HTMLDivElement>) => {
-      event.preventDefault();
-    },
-    []
-  );
-
-  const handleDrop = useCallback(
-    (event: React.DragEvent<HTMLDivElement>, index: number) => {
-      event.preventDefault();
-      const champion = JSON.parse(event.dataTransfer.getData("champion"));
-      onSwapChampions(champion, bannedPicks[index] as Champion);
-    },
-    [bannedPicks, onSwapChampions]
-  );
-
   return (
     <div className="banned-picks">
       {bannedPicks.map((bannedPick, index) => (
@@ -85,18 +51,11 @@ export function BannedPicks({
             event.preventDefault();
             handleRightClick(index);
           }}
-          draggable={!!bannedPick}
-          onDragStart={(event) =>
-            handleDragStart(event, bannedPick as Champion)
-          }
-          onDragEnd={handleDragEnd}
-          onDragOver={handleDragOver}
-          onDrop={(event) => handleDrop(event, index)}
         >
           {bannedPick ? (
             <img
               src={`http://ddragon.leagueoflegends.com/cdn/img/champion/tiles/${bannedPick.id}_0.jpg`}
-              alt={bannedPick.name}
+              alt={bannedPick.championName}
             />
           ) : (
             "Empty"

@@ -1,10 +1,9 @@
-import { useState, useRef, useCallback } from "react";
+import { useState, useCallback } from "react";
 import "./App.css";
 import { CharacterCard } from "./components/CharacterCard";
-import { BannedPicks } from "./components/BannedPicks";
 import { TeamMembers } from "./components/TeamMembers";
-
 import useChampionQuery from "./API/useChampionQuery";
+import TeamBans from "./components/TeamBans";
 
 interface Champion {
   championName: string;
@@ -12,250 +11,115 @@ interface Champion {
 }
 
 function App() {
-  const maxTeamSize = 5; // Maximum team size
-  const maxBans = 5;
+  const draft_object = {
+    Blue_ban1: null,
+    Red_ban1: null,
+    Blue_ban2: null,
+    Red_ban2: null,
+    Blue_ban3: null,
+    Red_ban3: null,
 
-  const [bannedPicksTeam1, setBannedPicksTeam1] = useState<(Champion | null)[]>(
-    Array(maxBans).fill(null)
-  );
-  const [selectedBannedPickTeam1, setSelectedBannedPickTeam1] =
-    useState<Champion | null>(null);
-  const [teamMembersTeam1, setTeamMembersTeam1] = useState<(Champion | null)[]>(
-    Array(maxTeamSize).fill(null)
-  );
+    Blue_pick1: null,
+    Red_pick1: null,
+    Red_pick2: null,
+    Blue_pick2: null,
+    Blue_pick3: null,
+    Red_pick3: null,
 
-  const [bannedPicksTeam2, setBannedPicksTeam2] = useState<(Champion | null)[]>(
-    Array(maxBans).fill(null)
-  );
-  const [selectedBannedPickTeam2, setSelectedBannedPickTeam2] =
-    useState<Champion | null>(null);
-  const [teamMembersTeam2, setTeamMembersTeam2] = useState<(Champion | null)[]>(
-    Array(maxTeamSize).fill(null)
-  );
+    Red_ban4: null,
+    Blue_ban4: null,
+    Red_ban5: null,
+    Blue_ban5: null,
 
-  const [selectedTeam, setSelectedTeam] = useState<number | null>(null);
-  const [selectedTeamMemberTeam1, setSelectedTeamMemberTeam1] =
-    useState<Champion | null>(null);
-  const [selectedTeamMemberTeam2, setSelectedTeamMemberTeam2] =
-    useState<Champion | null>(null);
+    Red_pick4: null,
+    Blue_pick4: null,
+    Blue_pick5: null,
+    Red_pick5: null,
+  };
+  // use the draft_object to set the state of the draft and then use that state to render the draft in the correct order and with the correct champions
+  const [draft, setDraft] = useState(draft_object);
+  const {
+    useChampionData,
+    championFilterByInput,
+    setChampionFilterByInput,
+    championFilterByTags,
+    setChampionFilterByTags,
+  } = useChampionQuery();
 
-  const selectedCharacterRef = useRef<Champion | null>(null);
-  const selectedBannedPickRef = useRef<number | null>(null);
-
-  const handleAddToTeam = useCallback(
-    (character: Champion, team: number) => {
-      if (team === 1) {
-        if (teamMembersTeam1.length < maxTeamSize) {
-          setTeamMembersTeam1([...teamMembersTeam1, character]);
-        }
-      } else if (team === 2) {
-        if (teamMembersTeam2.length < maxTeamSize) {
-          setTeamMembersTeam2([...teamMembersTeam2, character]);
-        }
+  function fill_next_null(clicked_champ: string, currentDraft: any) {
+    for (const [key, value] of Object.entries(currentDraft)) {
+      if (value === null) {
+        // dont mutated the state directly instead setDraft to a new object with the updated value for the key that was null
+        setDraft({
+          ...currentDraft,
+          [key]: clicked_champ,
+        });
+        break;
       }
-    },
-    [teamMembersTeam1, teamMembersTeam2]
-  );
-  const handleMoveChampion = (
-    fromTeam: number,
-    toTeam: number,
-    champion: Champion
+    }
+  }
+  // check hte draft object and filter the blue bans and red bans into their own arrays and then pass those arrays to the TeamBans component
+  const blueBans = Object.entries(draft)?.filter((key, _) => {
+    return key[0].includes("Blue_ban");
+  });
+
+  const redBans = Object.entries(draft)?.filter((key, _) => {
+    return key[0].includes("Red_ban");
+  });
+  // now for the redpicks and blue picks
+  const bluePicks = Object.entries(draft)?.filter((key, _) => {
+    return key[0].includes("Blue_pick");
+  });
+  const redPicks = Object.entries(draft)?.filter((key, _) => {
+    return key[0].includes("Red_pick");
+  });
+
+  // when i right click in the blueBans or redBans i want to set the value of the draft object to null
+  const handleRightClick = (
+    index: number,
+    team: "red" | "blue",
+    type: "ban" | "pick"
   ) => {
-    if (fromTeam === toTeam) {
-      // move within the same team
-      const updatedTeamMembers =
-        fromTeam === 1 ? [...teamMembersTeam1] : [...teamMembersTeam2];
-      const index = updatedTeamMembers.indexOf(champion);
-      if (index !== -1) {
-        updatedTeamMembers.splice(index, 1);
-        if (fromTeam === 1) {
-          setTeamMembersTeam1(updatedTeamMembers);
-        } else {
-          setTeamMembersTeam2(updatedTeamMembers);
-        }
-      }
+    if (["blue", "red"].includes(team) && ["ban", "pick"].includes(type)) {
+      setDraft({
+        ...draft,
+        [`${team.charAt(0).toUpperCase() + team.slice(1)}_${type}${index + 1}`]:
+          null,
+      });
+    }
+  };
+
+  const handleTagClick = (tag: string) => {
+    if (championFilterByTags.includes(tag)) {
+      // remove the tag from the filter if it's already in the filter
+      setChampionFilterByTags((prevTags: string[]) =>
+        prevTags.filter((t: string) => t !== tag)
+      );
     } else {
-      // move between teams
-      const updatedTeamMembers1 = [...teamMembersTeam1];
-      const updatedTeamMembers2 = [...teamMembersTeam2];
-
-      const index =
-        fromTeam === 1
-          ? updatedTeamMembers1.indexOf(champion)
-          : updatedTeamMembers2.indexOf(champion);
-
-      if (index !== -1) {
-        if (fromTeam === 1) {
-          updatedTeamMembers1.splice(index, 1);
-          updatedTeamMembers2.push(champion);
-          setTeamMembersTeam1(updatedTeamMembers1);
-          setTeamMembersTeam2(updatedTeamMembers2);
-        } else {
-          updatedTeamMembers2.splice(index, 1);
-          updatedTeamMembers1.push(champion);
-          setTeamMembersTeam2(updatedTeamMembers2);
-          setTeamMembersTeam1(updatedTeamMembers1);
-        }
-      }
+      // add the tag to the filter
+      setChampionFilterByTags((prevTags: string[]) => [...prevTags, tag]);
     }
   };
-  const handleSwapChampions = (championA: Champion, championB: Champion) => {
-    const updatedTeamMembers1 = [...teamMembersTeam1];
-    const updatedTeamMembers2 = [...teamMembersTeam2];
-
-    const indexA = updatedTeamMembers1.indexOf(championA);
-    const indexB = updatedTeamMembers2.indexOf(championB);
-
-    if (indexA !== -1 && indexB !== -1) {
-      updatedTeamMembers1[indexA] = championB;
-      updatedTeamMembers2[indexB] = championA;
-      setTeamMembersTeam1(updatedTeamMembers1);
-      setTeamMembersTeam2(updatedTeamMembers2);
-    }
-  };
-
-  const handleAddToBannedPicks = useCallback(
-    (character: Champion, team: number) => {
-      if (selectedBannedPickRef.current !== null) {
-        const updatedBannedPicks = [
-          ...(team === 1 ? bannedPicksTeam1 : bannedPicksTeam2),
-        ];
-
-        updatedBannedPicks[selectedBannedPickRef.current] = character;
-
-        if (team === 1) {
-          setBannedPicksTeam1(updatedBannedPicks);
-        } else {
-          setBannedPicksTeam2(updatedBannedPicks);
-        }
-
-        // Clear the selectedBannedPickRef
-        selectedBannedPickRef.current = null;
-      }
-    },
-    [bannedPicksTeam1, bannedPicksTeam2]
+  const changeViewByInput = useCallback(
+    (evt: React.ChangeEvent<HTMLInputElement>) =>
+      setChampionFilterByInput([...evt.target.value.split(" ")]),
+    [setChampionFilterByInput]
   );
-
-  const handleToggleBan = useCallback(
-    (index: number, team: number) => {
-      const currentBannedPick =
-        team === 1 ? bannedPicksTeam1[index] : bannedPicksTeam2[index];
-
-      if (!currentBannedPick) {
-        // If the slot is empty, ban a champion
-        const updatedBannedPicks =
-          team === 1 ? [...bannedPicksTeam1] : [...bannedPicksTeam2];
-
-        updatedBannedPicks[index] =
-          team === 1 ? selectedBannedPickTeam1 : selectedBannedPickTeam2;
-
-        if (selectedBannedPickRef.current === index) {
-          // If the same slot is clicked again, deselect it
-          selectedBannedPickRef.current = null;
-        } else {
-          selectedBannedPickRef.current = index;
-        }
-
-        if (team === 1) {
-          setBannedPicksTeam1(updatedBannedPicks);
-          setSelectedBannedPickTeam1(null); // Clear the selected champion for Team 1
-        } else {
-          setBannedPicksTeam2(updatedBannedPicks);
-          setSelectedBannedPickTeam2(null); // Clear the selected champion for Team 2
-        }
-      } else {
-        // If the slot contains a banned pick, select it
-        if (team === 1) {
-          setSelectedBannedPickTeam1(currentBannedPick);
-          setSelectedBannedPickTeam2(null); // Clear the selected champion for Team 2
-        } else {
-          setSelectedBannedPickTeam2(currentBannedPick);
-          setSelectedBannedPickTeam1(null); // Clear the selected champion for Team 1
-        }
-      }
-    },
-    [
-      bannedPicksTeam1,
-      bannedPicksTeam2,
-      selectedBannedPickTeam1,
-      selectedBannedPickTeam2,
-    ]
-  );
-
-  const handleSelectCharacter = useCallback(
-    (character: Champion, team: number) => {
-      if (selectedCharacterRef.current === character) {
-        // If the selected character is already selected, clear the selection
-        selectedCharacterRef.current = null;
-        if (team === 1) {
-          setSelectedBannedPickTeam1(null);
-          setSelectedTeamMemberTeam1(null);
-        } else {
-          setSelectedBannedPickTeam2(null);
-          setSelectedTeamMemberTeam2(null);
-        }
-      } else {
-        // If a different character is selected, update the selection
-        selectedCharacterRef.current = character;
-        if (team === 1) {
-          setSelectedBannedPickTeam1(null);
-          setSelectedTeamMemberTeam1((prevTeamMembers) => {
-            const emptySlotIndex = prevTeamMembers?.findIndex((c) => !c);
-            if (emptySlotIndex !== -1) {
-              const newTeamMembers = [...teamMembersTeam1];
-              newTeamMembers[emptySlotIndex] = character;
-              return newTeamMembers;
-            }
-            return teamMembersTeam1;
-          });
-          setSelectedBannedPickTeam2(null);
-          setSelectedTeamMemberTeam2(null);
-        } else {
-          setSelectedBannedPickTeam2(null);
-          setSelectedTeamMemberTeam2((prevTeamMembers) => {
-            const emptySlotIndex = prevTeamMembers?.findIndex((c) => !c);
-            if (emptySlotIndex !== -1) {
-              const newTeamMembers = [...teamMembersTeam2];
-              newTeamMembers[emptySlotIndex] = character;
-              return newTeamMembers;
-            }
-            return teamMembersTeam2;
-          });
-          setSelectedBannedPickTeam1(null);
-          setSelectedTeamMemberTeam1(null);
-        }
-      }
-    },
-    [teamMembersTeam1, teamMembersTeam2]
-  );
-  // check if the character is on either team or is banned already to disable the character
-  const isCharacterDisabled = (character: Champion) => {
-    const isOnTeam1 = teamMembersTeam1.some((c) => c?.id === character.id);
-    const isOnTeam2 = teamMembersTeam2.some((c) => c?.id === character.id);
-    const bannedPicks = [...bannedPicksTeam1, ...bannedPicksTeam2];
-    const isBanned = bannedPicks.some((c) => c?.id === character.id);
-    const isSelected =
-      selectedTeamMemberTeam1 === character ||
-      selectedTeamMemberTeam2 === character ||
-      selectedBannedPickTeam1 === character ||
-      selectedBannedPickTeam2 === character;
-    return isOnTeam1 || isOnTeam2 || isBanned || isSelected;
-  };
   // Fetch the champions
-  const getChamptionsQuery = useChampionQuery();
 
-  if (getChamptionsQuery.isLoading) {
+  if (useChampionData.isLoading) {
     return <div>Loading...</div>;
   }
-  if (getChamptionsQuery.isError) {
+  if (useChampionData.isError) {
     return <div>Error fetching champions</div>;
   }
   const mappedChampions: Champion[] = [];
+  console.log(useChampionData.data);
 
   // Iterate over the object keys (champion names)
-  for (const championName in getChamptionsQuery.data.data) {
-    if (getChamptionsQuery.data.data.hasOwnProperty(championName)) {
-      const champion = getChamptionsQuery.data.data[championName];
+  for (const championName in useChampionData.data.data) {
+    if (useChampionData.data.data.hasOwnProperty(championName)) {
+      const champion = useChampionData.data.data[championName];
 
       // Add additional properties or manipulate the data as needed
       // For example, you can add the champion name as a property
@@ -267,83 +131,121 @@ function App() {
   }
 
   return (
-    <div className="App">
-      <h1>League of Legends Draft</h1>
-      <div className="teams">
-        <div
-          className={`team ${selectedTeam === 1 ? "selected" : ""}`}
-          onClick={() => setSelectedTeam(1)}
-        >
-          <h2>Team 1</h2>
-          <BannedPicks
-            bannedPicks={bannedPicksTeam1}
-            currentSelected={selectedBannedPickRef.current}
-            onToggleBan={(index) => handleToggleBan(index, 1)}
-            onRightClick={(index) => {
-              // remove the ban
-              const updatedBannedPicks = [...bannedPicksTeam1];
-              updatedBannedPicks[index] = null;
-
-              setBannedPicksTeam1(updatedBannedPicks);
-            }}
-            onSwapChampions={handleSwapChampions}
-            onMoveChampion={handleMoveChampion}
-          />
-        </div>
-        <div
-          className={`team ${selectedTeam === 2 ? "selected" : ""}`}
-          onClick={() => setSelectedTeam(2)}
-        >
-          <h2>Team 2</h2>
-
-          <BannedPicks
-            bannedPicks={bannedPicksTeam2}
-            currentSelected={selectedBannedPickRef.current}
-            onToggleBan={(index) => handleToggleBan(index, 2)}
-            onRightClick={(index) => {
-              // remove the ban
-              const updatedBannedPicks = [...bannedPicksTeam2];
-              updatedBannedPicks[index] = null;
-
-              setBannedPicksTeam2(updatedBannedPicks);
-            }}
-            onSwapChampions={handleSwapChampions}
-            onMoveChampion={handleMoveChampion}
-          />
-        </div>
-      </div>
-      <section className="character-container">
-        <TeamMembers
-          teamMembers={teamMembersTeam1}
-          onAddToTeam={(champion) => handleAddToTeam(champion, 1)}
-          maxTeamSize={maxTeamSize}
-          onMoveChampion={(champion) => handleMoveChampion(1, 2, champion)}
-          onCharacterSelect={(champion) => handleSelectCharacter(champion, 1)}
-          selectedTeamMember={selectedTeamMemberTeam2}
+    <div className="App ">
+      <section className="snap-start">
+        <h1>League of Legends Draft</h1>
+        <TeamBans
+          blueBans={blueBans}
+          redBans={redBans}
+          version={useChampionData.data.version}
+          handleRightClick={handleRightClick}
         />
-        <div className="character-list">
-          {mappedChampions.map((champion, index) => (
-            <CharacterCard
-              key={index}
-              character={champion}
-              team={selectedTeam}
-              onAddToTeam={handleAddToTeam}
-              onSelectBannedPick={handleSelectCharacter}
-              onCharacterSelect={handleSelectCharacter}
-              onAddToBannedPicks={handleAddToBannedPicks}
-              isDisabled={isCharacterDisabled(champion)}
-              selectedCharacterRef={selectedCharacterRef}
-            />
-          ))}
-        </div>
-        <TeamMembers
-          teamMembers={teamMembersTeam2}
-          onAddToTeam={(champion) => handleAddToTeam(champion, 2)}
-          maxTeamSize={maxTeamSize}
-          onMoveChampion={(champion) => handleMoveChampion(2, 2, champion)}
-          onCharacterSelect={(champion) => handleSelectCharacter(champion, 2)}
-          selectedTeamMember={selectedTeamMemberTeam2}
-        />
+        <section className="grid grid-cols-[112px_1fr_112px] pt-10 gap-4 justify-between">
+          <TeamMembers
+            bluePicks={bluePicks}
+            redPicks={redPicks}
+            version={useChampionData.data.version}
+            handleRightClick={handleRightClick}
+          >
+            <div className="grid">
+              <input
+                className={` h-9 w-full rounded-full place-self-center mb-10 border-2 bg-bg px-3 py-1 text-sm sm:w-80 `}
+                placeholder="Search"
+                type="text"
+                name="tagSearch"
+                onChange={(e) => changeViewByInput(e)}
+              />
+              <button
+                className="hidden w-[96.81px] justify-end sm:flex "
+                onClick={() => {
+                  setShowFilterTags((open) => !open);
+                  if (showFilterTags) {
+                    setModPackFilterByTags([]);
+                  }
+                }}
+              >
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="25"
+                  height="25"
+                  fill="currentColor"
+                  viewBox="0 0 256 256"
+                >
+                  <path d="M230.6,49.53A15.81,15.81,0,0,0,216,40H40A16,16,0,0,0,28.19,66.76l.08.09L96,139.17V216a16,16,0,0,0,24.87,13.32l32-21.34A16,16,0,0,0,160,194.66V139.17l67.74-72.32.08-.09A15.8,15.8,0,0,0,230.6,49.53ZM40,56h0Zm108.34,72.28A15.92,15.92,0,0,0,144,139.17v55.49L112,216V139.17a15.92,15.92,0,0,0-4.32-10.94L40,56H216Z"></path>
+                </svg>
+              </button>
+              <div className=" overflow-y-scroll   mx-auto  flex-grow basis-0 h-[644px]">
+                <div className="grid max-[500px]:grid-cols-1 grid-cols-2 sm:grid-cols-4 lg:min-w-[45rem] md:grid-cols-6 gap-4 items-center justify-center ">
+                  {mappedChampions.map((champion, index) => {
+                    return (
+                      <CharacterCard
+                        key={index}
+                        character={champion}
+                        version={useChampionData.data.version}
+                        fill_next_null={fill_next_null}
+                        draft={draft}
+                      />
+                    );
+                  })}
+                </div>
+              </div>
+            </div>
+          </TeamMembers>
+        </section>
+      </section>
+
+      <section className=" h-screen snap-start pt-10">
+        {" "}
+        Lorem, ipsum dolor sit amet consectetur adipisicing elit. Ex facere
+        tenetur vero consequatur sapiente ducimus dolore molestiae repellat
+        excepturi quam veniam reprehenderit quaerat, placeat corrupti obcaecati
+        assumenda suscipit officiis dolorum. Lorem, ipsum dolor sit amet
+        consectetur adipisicing elit. Ex facere tenetur vero consequatur
+        sapiente ducimus dolore molestiae repellat excepturi quam veniam
+        reprehenderit quaerat, placeat corrupti obcaecati assumenda suscipit
+        officiis dolorum. Lorem, ipsum dolor sit amet consectetur adipisicing
+        elit. Ex facere tenetur vero consequatur sapiente ducimus dolore
+        molestiae repellat excepturi quam veniam reprehenderit quaerat, placeat
+        corrupti obcaecati assumenda suscipit officiis dolorum. Lorem, ipsum
+        dolor sit amet consectetur adipisicing elit. Ex facere tenetur vero
+        consequatur sapiente ducimus dolore molestiae repellat excepturi quam
+        veniam reprehenderit quaerat, placeat corrupti obcaecati assumenda
+        suscipit officiis dolorum. Lorem, ipsum dolor sit amet consectetur
+        adipisicing elit. Ex facere tenetur vero consequatur sapiente ducimus
+        dolore molestiae repellat excepturi quam veniam reprehenderit quaerat,
+        placeat corrupti obcaecati assumenda suscipit officiis dolorum. Lorem,
+        ipsum dolor sit amet consectetur adipisicing elit. Ex facere tenetur
+        vero consequatur sapiente ducimus dolore molestiae repellat excepturi
+        quam veniam reprehenderit quaerat, placeat corrupti obcaecati assumenda
+        suscipit officiis dolorum. Lorem, ipsum dolor sit amet consectetur
+        adipisicing elit. Ex facere tenetur vero consequatur sapiente ducimus
+        dolore molestiae repellat excepturi quam veniam reprehenderit quaerat,
+        placeat corrupti obcaecati assumenda suscipit officiis dolorum. Lorem,
+        ipsum dolor sit amet consectetur adipisicing elit. Ex facere tenetur
+        vero consequatur sapiente ducimus dolore molestiae repellat excepturi
+        quam veniam reprehenderit quaerat, placeat corrupti obcaecati assumenda
+        suscipit officiis dolorum. Lorem, ipsum dolor sit amet consectetur
+        adipisicing elit. Ex facere tenetur vero consequatur sapiente ducimus
+        dolore molestiae repellat excepturi quam veniam reprehenderit quaerat,
+        placeat corrupti obcaecati assumenda suscipit officiis dolorum. Lorem,
+        ipsum dolor sit amet consectetur adipisicing elit. Ex facere tenetur
+        vero consequatur sapiente ducimus dolore molestiae repellat excepturi
+        quam veniam reprehenderit quaerat, placeat corrupti obcaecati assumenda
+        suscipit officiis dolorum. Lorem, ipsum dolor sit amet consectetur
+        adipisicing elit. Ex facere tenetur vero consequatur sapiente ducimus
+        dolore molestiae repellat excepturi quam veniam reprehenderit quaerat,
+        placeat corrupti obcaecati assumenda suscipit officiis dolorum. Lorem,
+        ipsum dolor sit amet consectetur adipisicing elit. Ex facere tenetur
+        vero consequatur sapiente ducimus dolore molestiae repellat excepturi
+        quam veniam reprehenderit quaerat, placeat corrupti obcaecati assumenda
+        suscipit officiis dolorum. Lorem, ipsum dolor sit amet consectetur
+        adipisicing elit. Ex facere tenetur vero consequatur sapiente ducimus
+        dolore molestiae repellat excepturi quam veniam reprehenderit quaerat,
+        placeat corrupti obcaecati assumenda suscipit officiis dolorum. Lorem,
+        ipsum dolor sit amet consectetur adipisicing elit. Ex facere tenetur
+        vero consequatur sapiente ducimus dolore molestiae repellat excepturi
+        quam veniam reprehenderit quaerat, placeat corrupti obcaecati assumenda
+        suscipit officiis dolorum.
       </section>
     </div>
   );

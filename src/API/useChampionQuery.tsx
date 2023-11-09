@@ -1,25 +1,44 @@
 import { useQuery } from "@tanstack/react-query";
 import axios from "axios";
-
-export async function getNewestVersion() {
-  const response = await axios.get(
-    "https://ddragon.leagueoflegends.com/api/versions.json"
+import { useState } from "react";
+import { filterChampions } from "../utils/filterChampions";
+export async function getChampions(signal) {
+  const { data, status } = await axios.get(
+    `http://192.168.15.115:8000/champions-data/`,
+    signal
   );
-  const versions = response.data;
-  return versions[0];
-}
-export async function getChampions() {
-  const newestVersion = await getNewestVersion();
-  const response = await axios.get(
-    `http://ddragon.leagueoflegends.com/cdn/${newestVersion}/data/en_US/champion.json`
-  );
-  if (response.status !== 200) {
+  if (status !== 200) {
     throw new Error("Error fetching champions");
   }
-  const champions = response.data;
-  return champions;
+  return data;
 }
 
-const useChampionQuery = () => useQuery(["champions"], getChampions);
+const useChampionQuery = () => {
+  const [championFilterByInput, setChampionFilterByInput] = useState<string[]>(
+    []
+  );
+  const [championFilterByTags, setChampionFilterByTags] = useState<string[]>(
+    []
+  );
+
+  const useChampionData = useQuery(
+    ["champions"],
+    ({ signal }) => getChampions(signal),
+    {
+      refetchOnWindowFocus: false,
+      select: (data) =>
+        filterChampions(data, championFilterByInput, championFilterByTags),
+    }
+  );
+  console.log();
+
+  return {
+    useChampionData,
+    championFilterByInput,
+    setChampionFilterByInput,
+    championFilterByTags,
+    setChampionFilterByTags,
+  };
+};
 
 export default useChampionQuery;
