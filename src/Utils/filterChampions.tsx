@@ -35,12 +35,3 @@ export const filterChampions = (
 
   return { ...oldData, data: filteredChampions };
 };
-
-export const tags = [
-  "Fighter",
-  "Tank",
-  "Mage",
-  "Assassin",
-  "Support",
-  "Marksman",
-];

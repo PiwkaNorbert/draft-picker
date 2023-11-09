@@ -4,6 +4,7 @@ import { CharacterCard } from "./components/CharacterCard";
 import { TeamMembers } from "./components/TeamMembers";
 import useChampionQuery from "./API/useChampionQuery";
 import TeamBans from "./components/TeamBans";
+import { tags } from "./constants";
 
 interface Champion {
   championName: string;
@@ -40,7 +41,6 @@ function App() {
   const [draft, setDraft] = useState(draft_object);
   const {
     useChampionData,
-    championFilterByInput,
     setChampionFilterByInput,
     championFilterByTags,
     setChampionFilterByTags,
@@ -49,7 +49,6 @@ function App() {
   function fill_next_null(clicked_champ: string, currentDraft: any) {
     for (const [key, value] of Object.entries(currentDraft)) {
       if (value === null) {
-        // dont mutated the state directly instead setDraft to a new object with the updated value for the key that was null
         setDraft({
           ...currentDraft,
           [key]: clicked_champ,
@@ -74,7 +73,7 @@ function App() {
     return key[0].includes("Red_pick");
   });
 
-  // when i right click in the blueBans or redBans i want to set the value of the draft object to null
+  // remove the champion from the draft if the user right clicks on the champion
   const handleRightClick = (
     index: number,
     team: "red" | "blue",
@@ -88,6 +87,11 @@ function App() {
       });
     }
   };
+  const changeViewByInput = useCallback(
+    (evt: React.ChangeEvent<HTMLInputElement>) =>
+      setChampionFilterByInput([...evt.target.value.split(" ")]),
+    [setChampionFilterByInput]
+  );
 
   const handleTagClick = (tag: string) => {
     if (championFilterByTags.includes(tag)) {
@@ -100,11 +104,6 @@ function App() {
       setChampionFilterByTags((prevTags: string[]) => [...prevTags, tag]);
     }
   };
-  const changeViewByInput = useCallback(
-    (evt: React.ChangeEvent<HTMLInputElement>) =>
-      setChampionFilterByInput([...evt.target.value.split(" ")]),
-    [setChampionFilterByInput]
-  );
   // Fetch the champions
 
   if (useChampionData.isLoading) {
@@ -114,7 +113,7 @@ function App() {
     return <div>Error fetching champions</div>;
   }
   const mappedChampions: Champion[] = [];
-  console.log(useChampionData.data);
+  console.log(draft);
 
   // Iterate over the object keys (champion names)
   for (const championName in useChampionData.data.data) {
@@ -158,10 +157,7 @@ function App() {
               <button
                 className="hidden w-[96.81px] justify-end sm:flex "
                 onClick={() => {
-                  setShowFilterTags((open) => !open);
-                  if (showFilterTags) {
-                    setModPackFilterByTags([]);
-                  }
+                  setChampionFilterByTags(["Tank"]);
                 }}
               >
                 <svg
@@ -174,6 +170,41 @@ function App() {
                   <path d="M230.6,49.53A15.81,15.81,0,0,0,216,40H40A16,16,0,0,0,28.19,66.76l.08.09L96,139.17V216a16,16,0,0,0,24.87,13.32l32-21.34A16,16,0,0,0,160,194.66V139.17l67.74-72.32.08-.09A15.8,15.8,0,0,0,230.6,49.53ZM40,56h0Zm108.34,72.28A15.92,15.92,0,0,0,144,139.17v55.49L112,216V139.17a15.92,15.92,0,0,0-4.32-10.94L40,56H216Z"></path>
                 </svg>
               </button>
+              <button
+                className="hidden w-[96.81px] justify-end sm:flex "
+                onClick={() => {
+                  setChampionFilterByTags(["Tank"]);
+                }}
+              >
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="25"
+                  height="25"
+                  fill="currentColor"
+                  viewBox="0 0 256 256"
+                >
+                  <path d="M230.6,49.53A15.81,15.81,0,0,0,216,40H40A16,16,0,0,0,28.19,66.76l.08.09L96,139.17V216a16,16,0,0,0,24.87,13.32l32-21.34A16,16,0,0,0,160,194.66V139.17l67.74-72.32.08-.09A15.8,15.8,0,0,0,230.6,49.53ZM40,56h0Zm108.34,72.28A15.92,15.92,0,0,0,144,139.17v55.49L112,216V139.17a15.92,15.92,0,0,0-4.32-10.94L40,56H216Z"></path>
+                </svg>
+              </button>
+              {tags.map((tag, index) => (
+                <button
+                  key={index}
+                  className="hidden w-[96.81px] justify-end sm:flex "
+                  onClick={() => {
+                    setChampionFilterByTags([tag]);
+                  }}
+                >
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="25"
+                    height="25"
+                    fill="currentColor"
+                    viewBox="0 0 256 256"
+                  >
+                    <path d="M230.6,49.53A15.81,15.81,0,0,0,216,40H40A16,16,0,0,0,28.19,66.76l.08.09L96,139.17V216a16,16,0,0,0,24.87,13.32l32-21.34A16,16,0,0,0,160,194.66V139.17l67.74-72.32.08-.09A15.8,15.8,0,0,0,230.6,49.53ZM40,56h0Zm108.34,72.28A15.92,15.92,0,0,0,144,139.17v55.49L112,216V139.17a15.92,15.92,0,0,0-4.32-10.94L40,56H216Z"></path>
+                  </svg>
+                </button>
+              ))}
               <div className=" overflow-y-scroll   mx-auto  flex-grow basis-0 h-[644px]">
                 <div className="grid max-[500px]:grid-cols-1 grid-cols-2 sm:grid-cols-4 lg:min-w-[45rem] md:grid-cols-6 gap-4 items-center justify-center ">
                   {mappedChampions.map((champion, index) => {

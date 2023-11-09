@@ -30,7 +30,6 @@ const useChampionQuery = () => {
         filterChampions(data, championFilterByInput, championFilterByTags),
     }
   );
-  console.log();
 
   return {
     useChampionData,
