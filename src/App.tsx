@@ -5,6 +5,9 @@ import { TeamMembers } from "./components/TeamMembers";
 import useChampionQuery from "./API/useChampionQuery";
 import TeamBans from "./components/TeamBans";
 import { tags } from "./constants";
+import Graphs from "./components/Graphs";
+import { useMutation } from "@tanstack/react-query";
+import axios from "axios";
 
 interface Champion {
   championName: string;
@@ -57,21 +60,30 @@ function App() {
       }
     }
   }
-  // check hte draft object and filter the blue bans and red bans into their own arrays and then pass those arrays to the TeamBans component
-  const blueBans = Object.entries(draft)?.filter((key, _) => {
-    return key[0].includes("Blue_ban");
-  });
+  // on right click check the draft and if the champion is in the draft then remove it from the draft
+  function removeFromDraft(clicked_champ: string, currentDraft: any) {
+    for (const [key, value] of Object.entries(currentDraft)) {
+      if (value === clicked_champ) {
+        setDraft({
+          ...currentDraft,
+          [key]: null,
+        });
+        break;
+      }
+    }
+  }
 
-  const redBans = Object.entries(draft)?.filter((key, _) => {
-    return key[0].includes("Red_ban");
-  });
-  // now for the redpicks and blue picks
-  const bluePicks = Object.entries(draft)?.filter((key, _) => {
-    return key[0].includes("Blue_pick");
-  });
-  const redPicks = Object.entries(draft)?.filter((key, _) => {
-    return key[0].includes("Red_pick");
-  });
+  // check hte draft object and filter the blue bans and red bans into their own arrays and then pass those arrays to the TeamBans component
+  const getDraftEntries = (draft: any, keyMatch: string) => {
+    return Object.entries(draft)
+      .filter(([key]) => key.includes(keyMatch))
+      .map(([, value]) => value);
+  };
+
+  const blueBans = getDraftEntries(draft, "Blue_ban");
+  const redBans = getDraftEntries(draft, "Red_ban");
+  const bluePicks = getDraftEntries(draft, "Blue_pick");
+  const redPicks = getDraftEntries(draft, "Red_pick");
 
   // remove the champion from the draft if the user right clicks on the champion
   const handleRightClick = (
@@ -104,7 +116,12 @@ function App() {
       setChampionFilterByTags((prevTags: string[]) => [...prevTags, tag]);
     }
   };
-  // Fetch the champions
+
+  const updateGameAvg = useMutation((data) => {
+    return axios.post(`http://192.168.15.115:8000/game-avg/`, {
+      data,
+    });
+  });
 
   if (useChampionData.isLoading) {
     return <div>Loading...</div>;
@@ -113,7 +130,6 @@ function App() {
     return <div>Error fetching champions</div>;
   }
   const mappedChampions: Champion[] = [];
-  console.log(draft);
 
   // Iterate over the object keys (champion names)
   for (const championName in useChampionData.data.data) {
@@ -147,64 +163,36 @@ function App() {
             handleRightClick={handleRightClick}
           >
             <div className="grid">
-              <input
-                className={` h-9 w-full rounded-full place-self-center mb-10 border-2 bg-bg px-3 py-1 text-sm sm:w-80 `}
-                placeholder="Search"
-                type="text"
-                name="tagSearch"
-                onChange={(e) => changeViewByInput(e)}
-              />
-              <button
-                className="hidden w-[96.81px] justify-end sm:flex "
-                onClick={() => {
-                  setChampionFilterByTags(["Tank"]);
-                }}
-              >
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  width="25"
-                  height="25"
-                  fill="currentColor"
-                  viewBox="0 0 256 256"
-                >
-                  <path d="M230.6,49.53A15.81,15.81,0,0,0,216,40H40A16,16,0,0,0,28.19,66.76l.08.09L96,139.17V216a16,16,0,0,0,24.87,13.32l32-21.34A16,16,0,0,0,160,194.66V139.17l67.74-72.32.08-.09A15.8,15.8,0,0,0,230.6,49.53ZM40,56h0Zm108.34,72.28A15.92,15.92,0,0,0,144,139.17v55.49L112,216V139.17a15.92,15.92,0,0,0-4.32-10.94L40,56H216Z"></path>
-                </svg>
-              </button>
-              <button
-                className="hidden w-[96.81px] justify-end sm:flex "
-                onClick={() => {
-                  setChampionFilterByTags(["Tank"]);
-                }}
-              >
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  width="25"
-                  height="25"
-                  fill="currentColor"
-                  viewBox="0 0 256 256"
-                >
-                  <path d="M230.6,49.53A15.81,15.81,0,0,0,216,40H40A16,16,0,0,0,28.19,66.76l.08.09L96,139.17V216a16,16,0,0,0,24.87,13.32l32-21.34A16,16,0,0,0,160,194.66V139.17l67.74-72.32.08-.09A15.8,15.8,0,0,0,230.6,49.53ZM40,56h0Zm108.34,72.28A15.92,15.92,0,0,0,144,139.17v55.49L112,216V139.17a15.92,15.92,0,0,0-4.32-10.94L40,56H216Z"></path>
-                </svg>
-              </button>
-              {tags.map((tag, index) => (
-                <button
-                  key={index}
-                  className="hidden w-[96.81px] justify-end sm:flex "
-                  onClick={() => {
-                    setChampionFilterByTags([tag]);
-                  }}
-                >
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    width="25"
-                    height="25"
-                    fill="currentColor"
-                    viewBox="0 0 256 256"
+              <div className="flex items-center justify-center mb-10 gap-2">
+                <input
+                  className={` h-9 w-full rounded-full place-self-center  border-2 bg-bg px-3 py-1 text-sm sm:w-80 `}
+                  placeholder="Search"
+                  type="text"
+                  name="tagSearch"
+                  onChange={(e) => changeViewByInput(e)}
+                />
+
+                {tags.map((tag, index) => (
+                  <button
+                    key={index}
+                    className={`${
+                      championFilterByTags.includes(tag)
+                        ? `bg-gray-200 dark:text-bg/50 border-selected border-2 border-transparent`
+                        : ""
+                    } hover:bg-gray-100 rounded-full p-2 hover:border-selected hover:border-2 border-2 border-transparent`}
+                    onClick={() => handleTagClick(tag)}
                   >
-                    <path d="M230.6,49.53A15.81,15.81,0,0,0,216,40H40A16,16,0,0,0,28.19,66.76l.08.09L96,139.17V216a16,16,0,0,0,24.87,13.32l32-21.34A16,16,0,0,0,160,194.66V139.17l67.74-72.32.08-.09A15.8,15.8,0,0,0,230.6,49.53ZM40,56h0Zm108.34,72.28A15.92,15.92,0,0,0,144,139.17v55.49L112,216V139.17a15.92,15.92,0,0,0-4.32-10.94L40,56H216Z"></path>
-                  </svg>
-                </button>
-              ))}
+                    <img
+                      src={`/${tag}.webp`}
+                      alt={tag}
+                      width={24}
+                      height={24}
+                      className=" w-6 h-6"
+                    />
+                  </button>
+                ))}
+              </div>
+
               <div className=" overflow-y-scroll   mx-auto  flex-grow basis-0 h-[644px]">
                 <div className="grid max-[500px]:grid-cols-1 grid-cols-2 sm:grid-cols-4 lg:min-w-[45rem] md:grid-cols-6 gap-4 items-center justify-center ">
                   {mappedChampions.map((champion, index) => {
@@ -215,6 +203,7 @@ function App() {
                         version={useChampionData.data.version}
                         fill_next_null={fill_next_null}
                         draft={draft}
+                        removeFromDraft={removeFromDraft}
                       />
                     );
                   })}
@@ -226,57 +215,11 @@ function App() {
       </section>
 
       <section className=" h-screen snap-start pt-10">
-        {" "}
-        Lorem, ipsum dolor sit amet consectetur adipisicing elit. Ex facere
-        tenetur vero consequatur sapiente ducimus dolore molestiae repellat
-        excepturi quam veniam reprehenderit quaerat, placeat corrupti obcaecati
-        assumenda suscipit officiis dolorum. Lorem, ipsum dolor sit amet
-        consectetur adipisicing elit. Ex facere tenetur vero consequatur
-        sapiente ducimus dolore molestiae repellat excepturi quam veniam
-        reprehenderit quaerat, placeat corrupti obcaecati assumenda suscipit
-        officiis dolorum. Lorem, ipsum dolor sit amet consectetur adipisicing
-        elit. Ex facere tenetur vero consequatur sapiente ducimus dolore
-        molestiae repellat excepturi quam veniam reprehenderit quaerat, placeat
-        corrupti obcaecati assumenda suscipit officiis dolorum. Lorem, ipsum
-        dolor sit amet consectetur adipisicing elit. Ex facere tenetur vero
-        consequatur sapiente ducimus dolore molestiae repellat excepturi quam
-        veniam reprehenderit quaerat, placeat corrupti obcaecati assumenda
-        suscipit officiis dolorum. Lorem, ipsum dolor sit amet consectetur
-        adipisicing elit. Ex facere tenetur vero consequatur sapiente ducimus
-        dolore molestiae repellat excepturi quam veniam reprehenderit quaerat,
-        placeat corrupti obcaecati assumenda suscipit officiis dolorum. Lorem,
-        ipsum dolor sit amet consectetur adipisicing elit. Ex facere tenetur
-        vero consequatur sapiente ducimus dolore molestiae repellat excepturi
-        quam veniam reprehenderit quaerat, placeat corrupti obcaecati assumenda
-        suscipit officiis dolorum. Lorem, ipsum dolor sit amet consectetur
-        adipisicing elit. Ex facere tenetur vero consequatur sapiente ducimus
-        dolore molestiae repellat excepturi quam veniam reprehenderit quaerat,
-        placeat corrupti obcaecati assumenda suscipit officiis dolorum. Lorem,
-        ipsum dolor sit amet consectetur adipisicing elit. Ex facere tenetur
-        vero consequatur sapiente ducimus dolore molestiae repellat excepturi
-        quam veniam reprehenderit quaerat, placeat corrupti obcaecati assumenda
-        suscipit officiis dolorum. Lorem, ipsum dolor sit amet consectetur
-        adipisicing elit. Ex facere tenetur vero consequatur sapiente ducimus
-        dolore molestiae repellat excepturi quam veniam reprehenderit quaerat,
-        placeat corrupti obcaecati assumenda suscipit officiis dolorum. Lorem,
-        ipsum dolor sit amet consectetur adipisicing elit. Ex facere tenetur
-        vero consequatur sapiente ducimus dolore molestiae repellat excepturi
-        quam veniam reprehenderit quaerat, placeat corrupti obcaecati assumenda
-        suscipit officiis dolorum. Lorem, ipsum dolor sit amet consectetur
-        adipisicing elit. Ex facere tenetur vero consequatur sapiente ducimus
-        dolore molestiae repellat excepturi quam veniam reprehenderit quaerat,
-        placeat corrupti obcaecati assumenda suscipit officiis dolorum. Lorem,
-        ipsum dolor sit amet consectetur adipisicing elit. Ex facere tenetur
-        vero consequatur sapiente ducimus dolore molestiae repellat excepturi
-        quam veniam reprehenderit quaerat, placeat corrupti obcaecati assumenda
-        suscipit officiis dolorum. Lorem, ipsum dolor sit amet consectetur
-        adipisicing elit. Ex facere tenetur vero consequatur sapiente ducimus
-        dolore molestiae repellat excepturi quam veniam reprehenderit quaerat,
-        placeat corrupti obcaecati assumenda suscipit officiis dolorum. Lorem,
-        ipsum dolor sit amet consectetur adipisicing elit. Ex facere tenetur
-        vero consequatur sapiente ducimus dolore molestiae repellat excepturi
-        quam veniam reprehenderit quaerat, placeat corrupti obcaecati assumenda
-        suscipit officiis dolorum.
+        <Graphs
+          onChange={() => {
+            updateGameAvg.mutate(draft);
+          }}
+        />
       </section>
     </div>
   );

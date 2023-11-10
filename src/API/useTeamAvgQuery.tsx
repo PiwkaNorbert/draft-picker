@@ -1,18 +1,22 @@
 import { useQuery } from "@tanstack/react-query";
 import axios from "axios";
 
-export async function getTeamAvg() {
+export async function getTeamAvg(signal?: AbortSignal) {
   const { data, status } = await axios.get(
-    `http://192.168.15.115:8000/team-avg/`
+    `http://192.168.15.115:8000/game-avg/`,
+    {
+      signal,
+    }
   );
   if (status !== 200) {
     throw new Error("Error fetching Team avarage");
   }
-  console.log(data);
-
   return data;
 }
 
-const useChampionQuery = () => useQuery(["team-avg"], getTeamAvg);
+const useChampionQuery = (fetch: boolean) =>
+  useQuery(["team-avg"], ({ signal }) => getTeamAvg(signal), {
+    enabled: !!fetch,
+  });
 
 export default useChampionQuery;

@@ -20,7 +20,6 @@ export const filterChampions = (
       })
       .reduce((obj: any, key) => {
         obj[key] = Champions[key];
-        console.log(obj);
 
         return obj;
       }, {});
@@ -28,9 +27,17 @@ export const filterChampions = (
 
   // sort packs by tags
   if (championFilterByTags.length > 0) {
-    filteredChampions = Object.entries(Champions).filter((key, value) =>
-      console.log(key, value)
-    );
+    filteredChampions = Object.entries(Champions)
+      .filter(([_, value]: [string, unknown]) => {
+        const champion = value as Champion;
+        return championFilterByTags.every((tag) => {
+          return champion.tags.includes(tag);
+        });
+      })
+      .reduce((obj: any, key) => {
+        obj[key[0]] = key[1];
+        return obj;
+      }, {});
   }
 
   return { ...oldData, data: filteredChampions };

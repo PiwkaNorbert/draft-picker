@@ -1,8 +1,8 @@
 export const tags = [
-  "Fighter",
   "Tank",
-  "Mage",
+  "Fighter",
   "Assassin",
-  "Support",
+  "Mage",
   "Marksman",
+  "Support",
 ];

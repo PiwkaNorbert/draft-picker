@@ -1,11 +1,10 @@
-import { useCallback } from "react";
 const TeamBans = ({ blueBans, redBans, version, handleRightClick }) => {
   return (
     <div className="teams">
       <div className={`team `}>
         <h2>Team 1</h2>
         <div className="banned-picks">
-          {blueBans.map((bannedPick: string[] | null, index: number) => (
+          {blueBans.map((bannedPick: string | null, index: number) => (
             <div
               key={index + 1}
               className={`banned-pick-slot ${bannedPick ? "filled" : ""}`}
@@ -14,10 +13,10 @@ const TeamBans = ({ blueBans, redBans, version, handleRightClick }) => {
                 handleRightClick(index, "blue", "ban");
               }}
             >
-              {bannedPick && bannedPick[1] ? (
+              {bannedPick ? (
                 <img
-                  src={`https://ddragon.leagueoflegends.com/cdn/${version}/img/champion/${bannedPick[1]}.png`}
-                  alt={bannedPick[1]}
+                  src={`https://ddragon.leagueoflegends.com/cdn/${version}/img/champion/${bannedPick}.png`}
+                  alt={bannedPick}
                 />
               ) : (
                 <img src="no_champion.png" alt="no-champion" />
@@ -30,7 +29,7 @@ const TeamBans = ({ blueBans, redBans, version, handleRightClick }) => {
         <h2>Team 2</h2>
 
         <div className="banned-picks">
-          {redBans.map((bannedPick: string[] | null, index: number) => (
+          {redBans.map((bannedPick: string | null, index: number) => (
             <div
               key={index + 1}
               className={`banned-pick-slot ${bannedPick ? "filled" : ""}`}
@@ -39,10 +38,10 @@ const TeamBans = ({ blueBans, redBans, version, handleRightClick }) => {
                 handleRightClick(index, "red", "ban");
               }}
             >
-              {bannedPick && bannedPick[1] ? (
+              {bannedPick ? (
                 <img
-                  src={`https://ddragon.leagueoflegends.com/cdn/${version}/img/champion/${bannedPick[1]}.png`}
-                  alt={bannedPick[1]}
+                  src={`https://ddragon.leagueoflegends.com/cdn/${version}/img/champion/${bannedPick}.png`}
+                  alt={bannedPick}
                 />
               ) : (
                 <img src="no_champion.png" alt="no-champion" />
