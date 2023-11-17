@@ -1,6 +1,7 @@
 import { Champion } from "../types";
 
 export function CharacterCard({
+  index,
   character,
   version,
   fill_next_null,
@@ -39,7 +40,8 @@ export function CharacterCard({
         width={76}
         height={76}
         alt={character.name}
-        loading="lazy"
+        // loading={index < 24 ? "eager" : "lazy"}
+        loading={"eager"}
       />
       <div
         className={`absolute w-[5rem] h-[76px] ${

@@ -42,6 +42,8 @@ function App() {
   };
   // use the draft_object to set the state of the draft and then use that state to render the draft in the correct order and with the correct champions
   const [draft, setDraft] = useState(draft_object);
+  const [teamAvg, setTeamavg] = useState(null);
+
   const {
     useChampionData,
     setChampionFilterByInput,
@@ -49,24 +51,54 @@ function App() {
     setChampionFilterByTags,
   } = useChampionQuery();
 
+  const sendDraftMutation = useMutation((data) => {
+    return axios.post(`http://192.168.15.115:8000/game-avg/`, data);
+  });
+  const { mutate: updateGameAvg } = sendDraftMutation;
   function fill_next_null(clicked_champ: string, currentDraft: any) {
     for (const [key, value] of Object.entries(currentDraft)) {
       if (value === null) {
-        setDraft({
+        const newDraft = {
           ...currentDraft,
           [key]: clicked_champ,
-        });
+        };
+        setDraft(newDraft);
+        if (
+          (redPicks && redPicks[0] !== null) ||
+          (bluePicks && bluePicks[0] !== null)
+        ) {
+          console.log(redPicks);
+
+          updateGameAvg(newDraft, {
+            onSuccess: (data) => {
+              const { data: teamAvg } = data;
+              setTeamavg(teamAvg);
+            },
+          });
+        }
         break;
       }
     }
+  }
+
+  if (sendDraftMutation.isSuccess) {
+    // The mutation was successful, you can use the data here
   }
   // on right click check the draft and if the champion is in the draft then remove it from the draft
   function removeFromDraft(clicked_champ: string, currentDraft: any) {
     for (const [key, value] of Object.entries(currentDraft)) {
       if (value === clicked_champ) {
-        setDraft({
+        const newDraft = {
           ...currentDraft,
           [key]: null,
+        };
+        setDraft(newDraft);
+
+        updateGameAvg(newDraft, {
+          onSuccess: (data) => {
+            const { data: teamAvg } = data;
+            setTeamavg(teamAvg);
+          },
         });
         break;
       }
@@ -116,12 +148,6 @@ function App() {
       setChampionFilterByTags((prevTags: string[]) => [...prevTags, tag]);
     }
   };
-
-  const updateGameAvg = useMutation((data) => {
-    return axios.post(`http://192.168.15.115:8000/game-avg/`, {
-      data,
-    });
-  });
 
   if (useChampionData.isLoading) {
     return <div>Loading...</div>;
@@ -215,11 +241,7 @@ function App() {
       </section>
 
       <section className=" h-screen snap-start pt-10">
-        <Graphs
-          onChange={() => {
-            updateGameAvg.mutate(draft);
-          }}
-        />
+        <Graphs teamAvg={teamAvg} />
       </section>
     </div>
   );
