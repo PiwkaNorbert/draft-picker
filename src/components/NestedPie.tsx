@@ -1,8 +1,12 @@
 import NestedPieChart from "@toast-ui/chart/nestedPie";
 import "@toast-ui/chart/dist/toastui-chart.min.css";
-import { useRef, useEffect } from "react";
+import { useRef, useEffect, useState } from "react";
+
 const NestedPie = (teamAvg) => {
+  const [selectedStat, setSelectedStat] = useState('damageDealtToBuildings__avg');
+
   const chartRef = useRef<HTMLDivElement | null>(null);
+
   const options = {
     chart: {
       title: "Nested Pie Chart",
@@ -59,24 +63,33 @@ const NestedPie = (teamAvg) => {
       },
     },
   };
+
   const teamAvgData = teamAvg?.teamAvg?.teamAvg;
   console.log(teamAvgData);
+
+
 
   const redteamtotal = Array(5)
     .fill(null)
     .reduce((total, _, index) => {
-      const value =
-        ~~teamAvgData?.red_team[index]?.stats?.damageDealtToBuildings__avg;
+      const value = ~~teamAvgData?.red_team[index]?.stats?.[selectedStat];
       return total + (value ? +value : 0);
     }, 0);
 
   const blueteamtotal = Array(5)
     .fill(null)
     .reduce((total, _, index) => {
-      const value =
-        ~~teamAvgData?.blue_team[index]?.stats?.damageDealtToBuildings__avg;
+      const value = ~~teamAvgData?.blue_team[index]?.stats?.[selectedStat];
       return total + (value ? +value : 0);
     }, 0);
+
+  // ...
+
+  <select value={selectedStat} onChange={(e) => setSelectedStat(e.target.value)}>
+    <option value="damageDealtToBuildings__avg">Damage Dealt To Buildings</option>
+    {/* Add more options here */}
+  </select>
+
   function getDamageAvg(
     teamColor: "red_team" | "blue_team",
     playerIndex: number
@@ -84,6 +97,7 @@ const NestedPie = (teamAvg) => {
     return teamAvgData[teamColor][playerIndex]?.stats
       ?.damageDealtToBuildings__avg;
   }
+
   useEffect(() => {
     let chart: NestedPieChart | null = null;
 

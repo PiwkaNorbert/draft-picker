@@ -1,10 +1,11 @@
 import { useQuery } from "@tanstack/react-query";
 import axios from "axios";
 import { useState } from "react";
-import { filterChampions } from "../utils/filterChampions";
+import { filterChampions } from "../Utils/filterChampions";
+
 export async function getChampions(signal) {
   const { data, status } = await axios.get(
-    `http://192.168.15.115:8000/champions-data/`,
+    `http://192.168.15.220:8000/champions-data/`,
     signal
   );
   if (status !== 200) {

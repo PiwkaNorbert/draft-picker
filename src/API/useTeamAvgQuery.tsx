@@ -3,7 +3,7 @@ import axios from "axios";
 
 export async function getTeamAvg(signal?: AbortSignal) {
   const { data, status } = await axios.get(
-    `http://192.168.15.115:8000/game-avg/`,
+    `http://192.168.15.220:8000/game-avg/`,
     {
       signal,
     }

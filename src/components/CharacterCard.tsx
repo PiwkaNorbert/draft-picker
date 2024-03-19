@@ -1,23 +1,34 @@
 import { Champion } from "../types";
 
 export function CharacterCard({
-  index,
   character,
   version,
   fill_next_null,
   draft,
   removeFromDraft,
+  redPicks,
+  bluePicks,
+  redBans,
+  blueBans,
 }) {
-  const isCharacterDisabled = (champion: Champion) => {
-    for (const [_, value] of Object.entries(draft)) {
-      if (value === champion.id) {
-        return true;
-      }
-    }
-    return false;
+
+
+  const isCharacterInRed = (champion: Champion) => {
+      return redPicks.includes(champion.id) || redBans.includes(champion.id);
   };
 
+  const isCharacterInBlue = (champion: Champion) => {
+      return bluePicks.includes(champion.id) || blueBans.includes(champion.id);
+  };
+
+  const isCharacterDisabled = (champion: Champion) => {
+      return redPicks.includes(champion.id) || redBans.includes(champion.id) || bluePicks.includes(champion.id) || blueBans.includes(champion.id);
+  }
+
+  const characterInRed = isCharacterInRed(character);
+  const characterInBlue = isCharacterInBlue(character);
   const disableCharacter = isCharacterDisabled(character);
+
 
   return (
     <div
@@ -45,8 +56,11 @@ export function CharacterCard({
       />
       <div
         className={`absolute w-[5rem] h-[76px] ${
-          disableCharacter ? "bg-blue-300 rounded-lg opacity-30" : ""
-        }`}
+          disableCharacter ? " rounded-lg opacity-30" : ""
+        }
+        ${characterInRed ? "bg-red-400 text-red-400" : characterInBlue ? "bg-blue-400 text-blue-400" : ""}
+        
+        `}
       />
       <p
         className={`whitespace-nowrap ${disableCharacter ? "opacity-50 " : ""}`}

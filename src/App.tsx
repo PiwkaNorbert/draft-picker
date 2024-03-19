@@ -1,4 +1,4 @@
-import { useState, useCallback } from "react";
+import { useState, useCallback, useEffect, useRef } from "react";
 import "./App.css";
 import { CharacterCard } from "./components/CharacterCard";
 import { TeamMembers } from "./components/TeamMembers";
@@ -44,6 +44,8 @@ function App() {
   const [draft, setDraft] = useState(draft_object);
   const [teamAvg, setTeamavg] = useState(null);
 
+  const graphsRef = useRef<HTMLDivElement>(null);
+
   const {
     useChampionData,
     setChampionFilterByInput,
@@ -52,9 +54,10 @@ function App() {
   } = useChampionQuery();
 
   const sendDraftMutation = useMutation((data) => {
-    return axios.post(`http://192.168.15.115:8000/game-avg/`, data);
+    return axios.post(`http://192.168.15.220:8000/game-avg/`, data);
   });
   const { mutate: updateGameAvg } = sendDraftMutation;
+
   function fill_next_null(clicked_champ: string, currentDraft: any) {
     for (const [key, value] of Object.entries(currentDraft)) {
       if (value === null) {
@@ -80,6 +83,17 @@ function App() {
       }
     }
   }
+
+
+  useEffect(() => {
+    // Check if the draft object is filled
+    const isDraftFilled = Object.values(draft).every((value) => value !== null);
+    
+    if (isDraftFilled && graphsRef.current) {
+      // Scroll to the graphs
+      graphsRef.current.scrollIntoView({ behavior: 'smooth' });
+    }
+  }, [draft]);
 
   if (sendDraftMutation.isSuccess) {
     // The mutation was successful, you can use the data here
@@ -230,6 +244,10 @@ function App() {
                         fill_next_null={fill_next_null}
                         draft={draft}
                         removeFromDraft={removeFromDraft}
+                        redPicks={redPicks}
+                        bluePicks={bluePicks}
+                        redBans={redBans}
+                        blueBans={blueBans}
                       />
                     );
                   })}
@@ -240,7 +258,7 @@ function App() {
         </section>
       </section>
 
-      <section className=" h-screen snap-start pt-10">
+      <section className=" h-screen snap-start pt-10" ref={graphsRef}>
         <Graphs teamAvg={teamAvg} />
       </section>
     </div>
