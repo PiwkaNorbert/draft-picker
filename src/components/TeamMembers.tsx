@@ -11,7 +11,7 @@ export const TeamMembers = ({
         {bluePicks.map((picked: string | null, index: number) => (
           <div
             key={index}
-            className={`team-member-slot border-2 bg-white border-blue-300 rounded-lg overflow-hidden`}
+            className={`team-member-slot border-2 cursor-pointer bg-white border-blue-300 rounded-lg overflow-hidden`}
             onContextMenu={(event) => {
               event.preventDefault();
               handleRightClick(index, "blue", "pick");

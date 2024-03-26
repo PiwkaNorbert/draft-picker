@@ -1,102 +1,123 @@
 import NestedPieChart from "@toast-ui/chart/nestedPie";
 import "@toast-ui/chart/dist/toastui-chart.min.css";
-import { useRef, useEffect, useState } from "react";
+import { useRef, useEffect, useState, useMemo, useCallback } from "react";
 
-const NestedPie = (teamAvg) => {
-  const [selectedStat, setSelectedStat] = useState('damageDealtToBuildings__avg');
+const NestedPie = ({teamAvg}) => {
+    const [selectedStat, setSelectedStat] = useState('damageDealtToBuildings__avg');
+    const teamAvgData = teamAvg?.teamAvg;
 
-  const chartRef = useRef<HTMLDivElement | null>(null);
+    const chartRef = useRef<HTMLDivElement | null>(null);
 
-  const options = {
-    chart: {
-      title: "Nested Pie Chart",
-      height: 330,
-      width: 330,
-    },
-    series: {
-      teams: {
-        radiusRange: {
-          inner: "0%",
-          outer: "50%",
-        },
-      },
-      champions: {
-        radiusRange: {
-          inner: "60%",
-          outer: "90%",
-        },
-        dataLabels: {
-          visible: false,
-          pieSeriesName: {
-            visible: true,
-          },
-        },
-      },
-    },
-    exportMenu: {
-      visible: false,
-    },
-
-    theme: {
-      series: {
-        teams: {
-          colors: ["#fa0c20", "#1717ff"],
-          lineWidth: 1,
-          strokeStyle: "#000000",
-          hover: {
-            lineWidth: 2,
-            strokeStyle: "#000000",
-            shadowColor: "rgba(0, 0, 0, 0.5)",
-            shadowBlur: 10,
-          },
-        },
-        champions: {
-          lineWidth: 1,
-          strokeStyle: "#000000",
-          hover: {
-            lineWidth: 2,
-            strokeStyle: "#000000",
-            shadowColor: "rgba(0, 0, 0, 0.5)",
-            shadowBlur: 0,
-          },
-        },
-      },
-    },
-  };
-
-  const teamAvgData = teamAvg?.teamAvg?.teamAvg;
-  console.log(teamAvgData);
-
-
-
-  const redteamtotal = Array(5)
+    const redteamtotal = Array(5)
     .fill(null)
     .reduce((total, _, index) => {
       const value = ~~teamAvgData?.red_team[index]?.stats?.[selectedStat];
       return total + (value ? +value : 0);
     }, 0);
 
-  const blueteamtotal = Array(5)
-    .fill(null)
-    .reduce((total, _, index) => {
-      const value = ~~teamAvgData?.blue_team[index]?.stats?.[selectedStat];
-      return total + (value ? +value : 0);
-    }, 0);
+    const blueteamtotal = Array(5)
+      .fill(null)
+      .reduce((total, _, index) => {
+        const value = ~~teamAvgData?.blue_team[index]?.stats?.[selectedStat];
+        return total + (value ? +value : 0);
+      }, 0);
 
-  // ...
+    const getDamageAvg = useCallback((
+      teamColor: "red_team" | "blue_team",
+      playerIndex: number
+    ) => {
+      return teamAvgData[teamColor][playerIndex]?.stats
+        ?.[selectedStat]
+    }, [teamAvgData, selectedStat]);
 
-  <select value={selectedStat} onChange={(e) => setSelectedStat(e.target.value)}>
-    <option value="damageDealtToBuildings__avg">Damage Dealt To Buildings</option>
-    {/* Add more options here */}
-  </select>
 
-  function getDamageAvg(
-    teamColor: "red_team" | "blue_team",
-    playerIndex: number
-  ) {
-    return teamAvgData[teamColor][playerIndex]?.stats
-      ?.damageDealtToBuildings__avg;
-  }
+    const options = useMemo(()=> ({
+      chart: {
+        title: "Nested Pie Chart",
+        height: 330,
+        width: 330,
+      },
+      series: {
+        clockwise: false,
+        teams: {
+          radiusRange: {
+            inner: "0%",
+            outer: "50%",
+          },
+        },
+        champions: {
+          radiusRange: {
+            inner: "60%",
+            outer: "90%",
+          },
+          dataLabels: {
+            visible: false,
+            pieSeriesName: {
+              visible: true,
+            },
+          },
+        },
+      },
+      exportMenu: {
+        visible: false,
+      },
+
+      theme: {
+        series: {
+          teams: {
+            colors: ["#1717ff","#fa0c20"],
+            lineWidth: 1,
+            strokeStyle: "#000000",
+            hover: {
+              lineWidth: 2,
+              strokeStyle: "#000000",
+              shadowColor: "rgba(0, 0, 0, 0.5)",
+              shadowBlur: 10,
+            },
+          },
+          champions: {
+            lineWidth: 1,
+            strokeStyle: "#000000",
+            hover: {
+              lineWidth: 2,
+              strokeStyle: "#000000",
+              shadowColor: "rgba(0, 0, 0, 0.5)",
+              shadowBlur: 0,
+            },
+          },
+        },
+      },
+    }), []);
+
+
+
+
+    interface ChartData {
+      name: string;
+      parentName: string;
+      data: number;
+    }
+
+    const data: ChartData[] = useMemo(() => {
+      const result: ChartData[] = [];
+      const teams = ['blue_team', 'red_team'];
+
+      teams.forEach((team) => {
+        if (teamAvgData && teamAvgData[team]) {
+          for (let i = 0; i < 5; i++) {
+            result.push({
+              name: teamAvgData[team][i]?.champion ? teamAvgData[team][i].champion : "Name",
+              parentName: team === "red_team" ? "Red Team" : "Blue Team",
+              data: getDamageAvg(team, i) || 0,
+            });
+          }
+        }
+      });
+
+      return result;
+    }, [teamAvgData, getDamageAvg]);
+
+
 
   useEffect(() => {
     let chart: NestedPieChart | null = null;
@@ -111,99 +132,18 @@ const NestedPie = (teamAvg) => {
               name: "teams",
               data: [
                 {
-                  name: "Red Team",
-                  data: redteamtotal,
-                },
-                {
                   name: "Blue Team",
                   data: blueteamtotal,
+                },
+                {
+                  name: "Red Team",
+                  data: redteamtotal,
                 },
               ],
             },
             {
               name: "champions",
-              data: [
-                {
-                  name: teamAvgData?.red_team
-                    ? teamAvgData?.red_team[0]?.champion
-                    : "Name",
-                  parentName: "Red Team",
-                  data: teamAvgData?.red_team ? getDamageAvg("red_team", 0) : 0,
-                },
-                {
-                  name: teamAvgData?.red_team
-                    ? teamAvgData?.red_team[1]?.champion
-                    : "Name",
-                  parentName: "Red Team",
-                  data: teamAvgData?.red_team ? getDamageAvg("red_team", 1) : 0,
-                },
-                {
-                  name: teamAvgData?.red_team
-                    ? teamAvgData.red_team[2]?.champion
-                    : "Name",
-                  parentName: "Red Team",
-                  data: teamAvgData?.red_team ? getDamageAvg("red_team", 2) : 0,
-                },
-                {
-                  name: teamAvgData?.red_team
-                    ? teamAvgData?.red_team[3]?.champion
-                    : "Name",
-                  parentName: "Red Team",
-                  data: teamAvgData?.red_team ? getDamageAvg("red_team", 3) : 0,
-                },
-                {
-                  name: teamAvgData?.red_team
-                    ? teamAvgData?.red_team[4]?.champion
-                    : "Name",
-                  parentName: "Red Team",
-                  data: teamAvgData?.red_team ? getDamageAvg("red_team", 4) : 0,
-                },
-                {
-                  name: teamAvgData?.blue_team
-                    ? teamAvgData?.blue_team[0]?.champion
-                    : "Name",
-                  parentName: "Blue Team",
-                  data: teamAvgData?.blue_team
-                    ? getDamageAvg("blue_team", 0)
-                    : 0,
-                },
-                {
-                  name: teamAvgData?.blue_team
-                    ? teamAvgData?.blue_team[1]?.champion
-                    : "Name",
-                  parentName: "Blue Team",
-                  data: teamAvgData?.blue_team
-                    ? getDamageAvg("blue_team", 1)
-                    : 0,
-                },
-                {
-                  name: teamAvgData?.blue_team
-                    ? teamAvgData?.blue_team[2]?.champion
-                    : "Name",
-                  parentName: "Blue Team",
-                  data: teamAvgData?.blue_team
-                    ? getDamageAvg("blue_team", 2)
-                    : 0,
-                },
-                {
-                  name: teamAvgData?.blue_team
-                    ? teamAvgData?.blue_team[3]?.champion
-                    : "Name",
-                  parentName: "Blue Team",
-                  data: teamAvgData?.blue_team
-                    ? getDamageAvg("blue_team", 3)
-                    : 0,
-                },
-                {
-                  name: teamAvgData?.blue_team
-                    ? teamAvgData?.blue_team[4]?.champion
-                    : "Name",
-                  parentName: "Blue Team",
-                  data: teamAvgData?.blue_team
-                    ? getDamageAvg("blue_team", 4)
-                    : 0,
-                },
-              ],
+              data: data
             },
           ],
         },
@@ -218,10 +158,40 @@ const NestedPie = (teamAvg) => {
         chart.destroy();
       }
     };
-  }, [teamAvg]);
+  }, [teamAvg, selectedStat, redteamtotal, blueteamtotal, getDamageAvg, options, teamAvgData, data]);
 
-  return <div id="chart" ref={chartRef} />;
+  return (
+  <section className="flex gap-6">
+  <div id="chart" ref={chartRef} />
+  <select value={selectedStat} onChange={(e) => setSelectedStat(e.target.value)}>
+    {statOptions.map(({value, name}, idx: number) => (
+      <option key={idx} value={value}>
+        {name}
+      </option>
+    ))}
+  </select>
+  </section> 
+
+  )
   // return "hi";
 };
 
 export default NestedPie;
+
+const statOptions = [
+  {value: "damageDealtToBuildings__avg", name :"Damage Dealt To Buildings" },
+  {value: "damageDealtToObjectives__avg", name: "Damage Dealt To Objectives"},
+  {value: "damageDealtToTurrets__avg", name: "Damage Dealt To Turrets"},
+  {value: "damageSelfMitigated__avg", name: "Damage Self Mitigated"},
+  {value: "magicDamageDealtToChampions__avg", name: "Magic Damage Dealt To Champions"},
+  {value: "magicDamageTaken__avg", name: "Magic Damage Taken"},
+  {value: "physicalDamageDealtToChampions__avg", name: "Physical Damage Dealt To Champions"},
+  {value: "physicalDamageTaken__avg", name: "Physical Damage Taken"},
+  {value: "timeCCingOthers__avg", name: "Time CCing Others"},
+  {value: "totalDamageShieldedOnTeammates__avg", name: "Total Damage Shielded On Teammates"},
+  {value: "totalHeal__avg", name: "Total Heal"},
+  {value: "totalHealsOnTeammates__avg", name: "Total Heals On Teammates"},
+  {value: "totalTimeCCDealt__avg", name: "Total Time CC Dealt"},
+  {value: "trueDamageDealtToChampions__avg", name: "True Damage Dealt To Champions"},
+  {value: "trueDamageTaken__avg", name: "True Damage Taken"},
+];

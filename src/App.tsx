@@ -186,41 +186,48 @@ function App() {
   }
 
   return (
-    <div className="App ">
-      <section className="snap-start">
-        <h1>League of Legends Draft</h1>
+    <div className="App flex ">
+      <aside className="w-32 bg-red-300">
+      <h1>LoL Drafter</h1>
+
+
+      </aside>
+      <div className="flex-1 ">
+
+      <section className="snap-start xl:w-[900px] h-screen mx-auto">
         <TeamBans
           blueBans={blueBans}
           redBans={redBans}
           version={useChampionData.data.version}
           handleRightClick={handleRightClick}
         />
-        <section className="grid grid-cols-[112px_1fr_112px] pt-10 gap-4 justify-between">
+        <section className="flex pt-10 gap-4 justify-between">
           <TeamMembers
             bluePicks={bluePicks}
             redPicks={redPicks}
             version={useChampionData.data.version}
             handleRightClick={handleRightClick}
           >
-            <div className="grid">
-              <div className="flex items-center justify-center mb-10 gap-2">
+            <div className="grid w-fit place-items-center">
+              <div className="flex flex-col lg:flex-row items-center justify-center mb-10 gap-2">
                 <input
-                  className={` h-9 w-full rounded-full place-self-center  border-2 bg-bg px-3 py-1 text-sm sm:w-80 `}
+                  className={` h-9 rounded-full place-self-center  border-2 bg-bg px-3 py-1 text-sm w-80 `}
                   placeholder="Search"
                   type="text"
                   name="tagSearch"
                   onChange={(e) => changeViewByInput(e)}
                 />
 
+              <section className="flex gap-2">
                 {tags.map((tag, index) => (
                   <button
-                    key={index}
-                    className={`${
-                      championFilterByTags.includes(tag)
-                        ? `bg-gray-200 dark:text-bg/50 border-selected border-2 border-transparent`
-                        : ""
-                    } hover:bg-gray-100 rounded-full p-2 hover:border-selected hover:border-2 border-2 border-transparent`}
-                    onClick={() => handleTagClick(tag)}
+                  key={index}
+                  className={`${
+                    championFilterByTags.includes(tag)
+                    ? `bg-gray-200 dark:text-bg/50 border-selected border-2 border-transparent`
+                    : ""
+                  } hover:bg-gray-100 rounded-full p-2 hover:border-selected hover:border-2 border-2 border-transparent`}
+                  onClick={() => handleTagClick(tag)}
                   >
                     <img
                       src={`/${tag}.webp`}
@@ -228,13 +235,14 @@ function App() {
                       width={24}
                       height={24}
                       className=" w-6 h-6"
-                    />
+                      />
                   </button>
                 ))}
+                </section>
               </div>
 
-              <div className=" overflow-y-scroll   mx-auto  flex-grow basis-0 h-[644px]">
-                <div className="grid max-[500px]:grid-cols-1 grid-cols-2 sm:grid-cols-4 lg:min-w-[45rem] md:grid-cols-6 gap-4 items-center justify-center ">
+              <div className=" overflow-y-scroll overflow-x-clip  mx-auto  flex-grow basis-0 h-[544px]">
+                <div className="grid grid-cols-3 md:grid-cols-4 w-full lg:grid-cols-6 gap-4 items-center justify-center ">
                   {mappedChampions.map((champion, index) => {
                     return (
                       <CharacterCard
@@ -261,6 +269,8 @@ function App() {
       <section className=" h-screen snap-start pt-10" ref={graphsRef}>
         <Graphs teamAvg={teamAvg} />
       </section>
+      </div>
+
     </div>
   );
 }

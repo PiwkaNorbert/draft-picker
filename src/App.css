@@ -14,6 +14,10 @@ p {
   padding: 0;
 }
 
+canvas {
+  background-color: #f0f0f0;
+}
+
 /* Apply a font-family and background color */
 body {
   font-family: Arial, sans-serif;
