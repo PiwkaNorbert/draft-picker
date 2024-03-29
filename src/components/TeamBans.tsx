@@ -1,4 +1,5 @@
 const TeamBans = ({ blueBans, redBans, version, handleRightClick }) => {
+
   return (
     <div className="w-full flex justify-between gap-2 mx-auto">
       <div className={`team `}>

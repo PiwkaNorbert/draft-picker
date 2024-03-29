@@ -8,14 +8,42 @@ import { tags } from "./constants";
 import Graphs from "./components/Graphs";
 import { useMutation } from "@tanstack/react-query";
 import axios from "axios";
+import { Root } from "./types/data";
+import { TeamAvg } from "./types/util";
 
 interface Champion {
-  championName: string;
+  championName?: string;
   [key: string]: any;
 }
 
+interface DraftObject {
+  Blue_ban1: string | null;
+  Red_ban1: string | null;
+  Blue_ban2: string | null;
+  Red_ban2: string | null;
+  Blue_ban3: string | null;
+  Red_ban3: string | null;
+
+  Blue_pick1: string | null;
+  Red_pick1: string | null;
+  Red_pick2: string | null;
+  Blue_pick2: string | null;
+  Blue_pick3: string | null;
+  Red_pick3: string | null;
+
+  Red_ban4: string | null;
+  Blue_ban4: string | null;
+  Red_ban5: string | null;
+  Blue_ban5: string | null;
+
+  Red_pick4: string | null;
+  Blue_pick4: string | null;
+  Blue_pick5: string | null;
+  Red_pick5: string | null;
+}
+
 function App() {
-  const draft_object = {
+  const draft_object: DraftObject = {
     Blue_ban1: null,
     Red_ban1: null,
     Blue_ban2: null,
@@ -41,8 +69,11 @@ function App() {
     Red_pick5: null,
   };
   // use the draft_object to set the state of the draft and then use that state to render the draft in the correct order and with the correct champions
-  const [draft, setDraft] = useState(draft_object);
-  const [teamAvg, setTeamavg] = useState(null);
+  const [draft, setDraft] = useState(()=>draft_object);
+
+  
+  const [teamAvg, setTeamavg] = useState<TeamAvg | null>(null);
+  
 
   const graphsRef = useRef<HTMLDivElement>(null);
 
@@ -58,20 +89,20 @@ function App() {
   });
   const { mutate: updateGameAvg } = sendDraftMutation;
 
-  function fill_next_null(clicked_champ: string, currentDraft: any) {
+  function fill_next_null(clicked_champ: string, currentDraft: DraftObject) {
     for (const [key, value] of Object.entries(currentDraft)) {
       if (value === null) {
+
         const newDraft = {
           ...currentDraft,
           [key]: clicked_champ,
         };
+
         setDraft(newDraft);
         if (
           (redPicks && redPicks[0] !== null) ||
           (bluePicks && bluePicks[0] !== null)
         ) {
-          console.log(redPicks);
-
           updateGameAvg(newDraft, {
             onSuccess: (data) => {
               const { data: teamAvg } = data;
@@ -83,6 +114,28 @@ function App() {
       }
     }
   }
+
+    // on right click check the draft and if the champion is in the draft then remove it from the draft
+    function removeFromDraft(clicked_champ: string, currentDraft: DraftObject) {
+      for (const [key, value] of Object.entries(currentDraft)) {
+        if (value === clicked_champ) {
+          const newDraft = {
+            ...currentDraft,
+            [key]: null,
+          };
+          setDraft(newDraft);
+  
+          updateGameAvg(newDraft, {
+            onSuccess: (data) => {
+              const { data: teamAvg } = data;
+              setTeamavg(teamAvg);
+            },
+          });
+          break;
+        }
+      }
+    }
+  
 
 
   useEffect(() => {
@@ -98,29 +151,9 @@ function App() {
   if (sendDraftMutation.isSuccess) {
     // The mutation was successful, you can use the data here
   }
-  // on right click check the draft and if the champion is in the draft then remove it from the draft
-  function removeFromDraft(clicked_champ: string, currentDraft: any) {
-    for (const [key, value] of Object.entries(currentDraft)) {
-      if (value === clicked_champ) {
-        const newDraft = {
-          ...currentDraft,
-          [key]: null,
-        };
-        setDraft(newDraft);
-
-        updateGameAvg(newDraft, {
-          onSuccess: (data) => {
-            const { data: teamAvg } = data;
-            setTeamavg(teamAvg);
-          },
-        });
-        break;
-      }
-    }
-  }
 
   // check hte draft object and filter the blue bans and red bans into their own arrays and then pass those arrays to the TeamBans component
-  const getDraftEntries = (draft: any, keyMatch: string) => {
+  const getDraftEntries = (draft: DraftObject, keyMatch: string) => {
     return Object.entries(draft)
       .filter(([key]) => key.includes(keyMatch))
       .map(([, value]) => value);
@@ -170,11 +203,14 @@ function App() {
     return <div>Error fetching champions</div>;
   }
   const mappedChampions: Champion[] = [];
-
+  
+  const championData = useChampionData.data as Root;
   // Iterate over the object keys (champion names)
-  for (const championName in useChampionData.data.data) {
-    if (useChampionData.data.data.hasOwnProperty(championName)) {
-      const champion = useChampionData.data.data[championName];
+  for (const championName in championData.data) {
+    if (Object.prototype.hasOwnProperty.call(championData.data, championName)) {
+      const champion = championData.data[championName];
+      console.log(champion);
+      
 
       // Add additional properties or manipulate the data as needed
       // For example, you can add the champion name as a property
@@ -186,7 +222,7 @@ function App() {
   }
 
   return (
-    <div className="App flex ">
+    <div className="App flex gap-6 p-6">
       <aside className="w-32 bg-red-300">
       <h1>LoL Drafter</h1>
 
@@ -194,18 +230,18 @@ function App() {
       </aside>
       <div className="flex-1 ">
 
-      <section className="snap-start xl:w-[900px] h-screen mx-auto">
+      {/* <section className="snap-start xl:w-[900px] h-screen mx-auto">
         <TeamBans
           blueBans={blueBans}
           redBans={redBans}
-          version={useChampionData.data.version}
+          version={championData.version}
           handleRightClick={handleRightClick}
         />
         <section className="flex pt-10 gap-4 justify-between">
           <TeamMembers
             bluePicks={bluePicks}
             redPicks={redPicks}
-            version={useChampionData.data.version}
+            version={championData.version}
             handleRightClick={handleRightClick}
           >
             <div className="grid w-fit place-items-center">
@@ -248,7 +284,7 @@ function App() {
                       <CharacterCard
                         key={index}
                         character={champion}
-                        version={useChampionData.data.version}
+                        version={championData.version}
                         fill_next_null={fill_next_null}
                         draft={draft}
                         removeFromDraft={removeFromDraft}
@@ -264,10 +300,14 @@ function App() {
             </div>
           </TeamMembers>
         </section>
-      </section>
+      </section> */}
 
-      <section className=" h-screen snap-start pt-10" ref={graphsRef}>
-        <Graphs teamAvg={teamAvg} />
+      <section className=" h-screen snap-start pt-10 bg-white grid" ref={graphsRef}>
+        <div className="flex flex-nowrap gap-6 justify-between items-center p-6 ">
+            <button className="bg-blue-500 size-20 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"> Left </button>
+            <Graphs teamAvg={teamAvg} />
+            <button className="bg-blue-500 size-20 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"> Right </button>
+        </div>
       </section>
       </div>
 

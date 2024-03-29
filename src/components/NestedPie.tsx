@@ -1,34 +1,39 @@
 import NestedPieChart from "@toast-ui/chart/nestedPie";
 import "@toast-ui/chart/dist/toastui-chart.min.css";
-import { useRef, useEffect, useState, useMemo, useCallback } from "react";
+import { useRef, useEffect, useMemo, useCallback, FC } from "react";
+import { TeamAvg } from "../types/util";
 
-const NestedPie = ({teamAvg}) => {
-    const [selectedStat, setSelectedStat] = useState('damageDealtToBuildings__avg');
-    const teamAvgData = teamAvg?.teamAvg;
+
+const NestedPie: FC<{ teamAvg: TeamAvg | null, selectedStat: string }> = ({ teamAvg, selectedStat }) => {
+
+
 
     const chartRef = useRef<HTMLDivElement | null>(null);
 
     const redteamtotal = Array(5)
     .fill(null)
     .reduce((total, _, index) => {
-      const value = ~~teamAvgData?.red_team[index]?.stats?.[selectedStat];
-      return total + (value ? +value : 0);
-    }, 0);
+      const value = ~~(teamAvg?.red_team[index]?.stats?.[selectedStat] || 0);
 
+      return total + value;
+    }, 0);
+  
     const blueteamtotal = Array(5)
       .fill(null)
       .reduce((total, _, index) => {
-        const value = ~~teamAvgData?.blue_team[index]?.stats?.[selectedStat];
-        return total + (value ? +value : 0);
+        const value = ~~(teamAvg?.blue_team[index]?.stats?.[selectedStat] || 0);
+        return total + value;
       }, 0);
 
     const getDamageAvg = useCallback((
       teamColor: "red_team" | "blue_team",
       playerIndex: number
-    ) => {
-      return teamAvgData[teamColor][playerIndex]?.stats
-        ?.[selectedStat]
-    }, [teamAvgData, selectedStat]);
+    ): number => {
+      if (teamAvg === null) return 0;
+      
+      return teamAvg[teamColor][playerIndex]?.stats
+        ?.[selectedStat] || 0
+    }, [teamAvg, selectedStat]);
 
 
     const options = useMemo(()=> ({
@@ -90,8 +95,6 @@ const NestedPie = ({teamAvg}) => {
     }), []);
 
 
-
-
     interface ChartData {
       name: string;
       parentName: string;
@@ -103,19 +106,26 @@ const NestedPie = ({teamAvg}) => {
       const teams = ['blue_team', 'red_team'];
 
       teams.forEach((team) => {
-        if (teamAvgData && teamAvgData[team]) {
+        if (teamAvg && teamAvg[team]) {
           for (let i = 0; i < 5; i++) {
-            result.push({
-              name: teamAvgData[team][i]?.champion ? teamAvgData[team][i].champion : "Name",
-              parentName: team === "red_team" ? "Red Team" : "Blue Team",
-              data: getDamageAvg(team, i) || 0,
-            });
-          }
+
+            const player = teamAvg[team][i];
+
+            const parentName = team.charAt(0).toUpperCase() + team.slice(1);
+            console.log(player, parentName);
+            
+            if (player) {
+              result.push({
+                name: player.champion,
+                parentName: team === "red_team" ? "Red Team" : "Blue Team",
+                data: getDamageAvg(team as "red_team" | "blue_team", i),
+              });
+            }
         }
-      });
+      }});
 
       return result;
-    }, [teamAvgData, getDamageAvg]);
+    }, [teamAvg, getDamageAvg]);
 
 
 
@@ -158,40 +168,14 @@ const NestedPie = ({teamAvg}) => {
         chart.destroy();
       }
     };
-  }, [teamAvg, selectedStat, redteamtotal, blueteamtotal, getDamageAvg, options, teamAvgData, data]);
+  }, [teamAvg, selectedStat, redteamtotal, blueteamtotal, getDamageAvg, options, data]);
 
   return (
-  <section className="flex gap-6">
   <div id="chart" ref={chartRef} />
-  <select value={selectedStat} onChange={(e) => setSelectedStat(e.target.value)}>
-    {statOptions.map(({value, name}, idx: number) => (
-      <option key={idx} value={value}>
-        {name}
-      </option>
-    ))}
-  </select>
-  </section> 
+
 
   )
   // return "hi";
 };
 
 export default NestedPie;
-
-const statOptions = [
-  {value: "damageDealtToBuildings__avg", name :"Damage Dealt To Buildings" },
-  {value: "damageDealtToObjectives__avg", name: "Damage Dealt To Objectives"},
-  {value: "damageDealtToTurrets__avg", name: "Damage Dealt To Turrets"},
-  {value: "damageSelfMitigated__avg", name: "Damage Self Mitigated"},
-  {value: "magicDamageDealtToChampions__avg", name: "Magic Damage Dealt To Champions"},
-  {value: "magicDamageTaken__avg", name: "Magic Damage Taken"},
-  {value: "physicalDamageDealtToChampions__avg", name: "Physical Damage Dealt To Champions"},
-  {value: "physicalDamageTaken__avg", name: "Physical Damage Taken"},
-  {value: "timeCCingOthers__avg", name: "Time CCing Others"},
-  {value: "totalDamageShieldedOnTeammates__avg", name: "Total Damage Shielded On Teammates"},
-  {value: "totalHeal__avg", name: "Total Heal"},
-  {value: "totalHealsOnTeammates__avg", name: "Total Heals On Teammates"},
-  {value: "totalTimeCCDealt__avg", name: "Total Time CC Dealt"},
-  {value: "trueDamageDealtToChampions__avg", name: "True Damage Dealt To Champions"},
-  {value: "trueDamageTaken__avg", name: "True Damage Taken"},
-];

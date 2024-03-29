@@ -2,8 +2,9 @@ import { useQuery } from "@tanstack/react-query";
 import axios from "axios";
 import { useState } from "react";
 import { filterChampions } from "../Utils/filterChampions";
+import { Root } from "../types/data";
 
-export async function getChampions(signal) {
+export async function getChampions(signal: any): Promise<Root>{
   const { data, status } = await axios.get(
     `http://192.168.15.220:8000/champions-data/`,
     signal
@@ -11,6 +12,8 @@ export async function getChampions(signal) {
   if (status !== 200) {
     throw new Error("Error fetching champions");
   }
+
+  
   return data;
 }
 

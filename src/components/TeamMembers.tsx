@@ -5,6 +5,9 @@ export const TeamMembers = ({
   version,
   handleRightClick,
 }) => {
+
+  // #TODO: on rightclick update the bans array with the selected champion since itss not recalculating the graph
+
   return (
     <>
       <div className={` flex flex-col gap-y-2  [&>*:nth-child(3)]:mb-8 `}>
