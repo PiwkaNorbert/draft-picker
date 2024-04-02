@@ -11,6 +11,8 @@ import axios from "axios";
 import { Root } from "./types/data";
 import { TeamAvg } from "./types/util";
 
+
+
 interface Champion {
   championName?: string;
   [key: string]: any;
@@ -44,32 +46,56 @@ interface DraftObject {
 
 function App() {
   const draft_object: DraftObject = {
-    Blue_ban1: null,
-    Red_ban1: null,
-    Blue_ban2: null,
-    Red_ban2: null,
-    Blue_ban3: null,
-    Red_ban3: null,
+    // Blue_ban1: null,
+    // Red_ban1: null,
+    // Blue_ban2: null,
+    // Red_ban2: null,
+    // Blue_ban3: null,
+    // Red_ban3: null,
 
-    Blue_pick1: null,
-    Red_pick1: null,
-    Red_pick2: null,
-    Blue_pick2: null,
-    Blue_pick3: null,
-    Red_pick3: null,
+    // Blue_pick1: null,
+    // Red_pick1: null,
+    // Red_pick2: null,
+    // Blue_pick2: null,
+    // Blue_pick3: null,
+    // Red_pick3: null,
 
-    Red_ban4: null,
-    Blue_ban4: null,
-    Red_ban5: null,
-    Blue_ban5: null,
+    // Red_ban4: null,
+    // Blue_ban4: null,
+    // Red_ban5: null,
+    // Blue_ban5: null,
 
-    Red_pick4: null,
-    Blue_pick4: null,
-    Blue_pick5: null,
-    Red_pick5: null,
+    // Red_pick4: null,
+    // Blue_pick4: null,
+    // Blue_pick5: null,
+    // Red_pick5: null,
+    
+      "Blue_ban1": "Amumu",
+      "Red_ban1": "Azir",
+      "Blue_ban2": "Alistar",
+      "Red_ban2": "AurelionSol",
+      "Blue_ban3": "Akshan",
+      "Red_ban3": "Ashe",
+      "Blue_pick1": "Akali",
+      "Red_pick1": "Aphelios",
+      "Red_pick2": "Annie",
+      "Blue_pick2": "Ahri",
+      "Blue_pick3": "Aatrox",
+      "Red_pick3": "Anivia",
+      "Red_ban4": "Bard",
+      "Blue_ban4": "Caitlyn",
+      "Red_ban5": "Belveth",
+      "Blue_ban5": "Camille",
+      "Red_pick4": "Blitzcrank",
+      "Blue_pick4": "Cassiopeia",
+      "Blue_pick5": "Chogath",
+      "Red_pick5": null
+  
   };
   // use the draft_object to set the state of the draft and then use that state to render the draft in the correct order and with the correct champions
   const [draft, setDraft] = useState(()=>draft_object);
+  console.log(draft);
+  
 
   
   const [teamAvg, setTeamavg] = useState<TeamAvg | null>(null);
@@ -209,7 +235,7 @@ function App() {
   for (const championName in championData.data) {
     if (Object.prototype.hasOwnProperty.call(championData.data, championName)) {
       const champion = championData.data[championName];
-      console.log(champion);
+      // console.log(champion);
       
 
       // Add additional properties or manipulate the data as needed
@@ -230,7 +256,7 @@ function App() {
       </aside>
       <div className="flex-1 ">
 
-      {/* <section className="snap-start xl:w-[900px] h-screen mx-auto">
+      <section className="snap-start xl:w-[900px] h-screen mx-auto">
         <TeamBans
           blueBans={blueBans}
           redBans={redBans}
@@ -300,14 +326,11 @@ function App() {
             </div>
           </TeamMembers>
         </section>
-      </section> */}
+      </section>
 
-      <section className=" h-screen snap-start pt-10 bg-white grid" ref={graphsRef}>
-        <div className="flex flex-nowrap gap-6 justify-between items-center p-6 ">
-            <button className="bg-blue-500 size-20 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"> Left </button>
-            <Graphs teamAvg={teamAvg} />
-            <button className="bg-blue-500 size-20 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"> Right </button>
-        </div>
+      <section className=" h-screen snap-start p-10 px-20 bg-white flex flex-col" ref={graphsRef}>
+              <Graphs teamAvg={teamAvg} />
+       
       </section>
       </div>
 

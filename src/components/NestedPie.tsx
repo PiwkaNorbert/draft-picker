@@ -2,9 +2,10 @@ import NestedPieChart from "@toast-ui/chart/nestedPie";
 import "@toast-ui/chart/dist/toastui-chart.min.css";
 import { useRef, useEffect, useMemo, useCallback, FC } from "react";
 import { TeamAvg } from "../types/util";
+import { cn } from "../lib/utils";
 
 
-const NestedPie: FC<{ teamAvg: TeamAvg | null, selectedStat: string }> = ({ teamAvg, selectedStat }) => {
+const NestedPie: FC<{ teamAvg: TeamAvg | null, selectedStat: string, title: string, className: string }> = ({ teamAvg, selectedStat, title, className }) => {
 
 
 
@@ -38,7 +39,7 @@ const NestedPie: FC<{ teamAvg: TeamAvg | null, selectedStat: string }> = ({ team
 
     const options = useMemo(()=> ({
       chart: {
-        title: "Nested Pie Chart",
+        title: title,
         height: 330,
         width: 330,
       },
@@ -171,7 +172,13 @@ const NestedPie: FC<{ teamAvg: TeamAvg | null, selectedStat: string }> = ({ team
   }, [teamAvg, selectedStat, redteamtotal, blueteamtotal, getDamageAvg, options, data]);
 
   return (
-  <div id="chart" ref={chartRef} />
+  <div 
+    className={cn(
+      "shadow-xl rounded-xl overflow-hidden shadow-slate-300 col-span-2",
+      className
+    )}
+    id="chart"
+    ref={chartRef} />
 
 
   )
