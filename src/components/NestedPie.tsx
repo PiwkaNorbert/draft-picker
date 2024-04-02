@@ -174,7 +174,7 @@ const NestedPie: FC<{ teamAvg: TeamAvg | null, selectedStat: string, title: stri
   return (
   <div 
     className={cn(
-      "shadow-lg rounded-xl overflow-hidden shadow-slate-300 col-span-2",
+      "shadow-lg  shadow-slate-300 col-span-2",
       className
     )}
     id="chart"
