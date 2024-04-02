@@ -71,7 +71,7 @@ const NestedPie: FC<{ teamAvg: TeamAvg | null, selectedStat: string, title: stri
       theme: {
         series: {
           teams: {
-            colors: ["#1717ff","#fa0c20"],
+            colors: ["#2563eb","#ef4444"],
             lineWidth: 1,
             strokeStyle: "#000000",
             hover: {
@@ -174,7 +174,7 @@ const NestedPie: FC<{ teamAvg: TeamAvg | null, selectedStat: string, title: stri
   return (
   <div 
     className={cn(
-      "shadow-xl rounded-xl overflow-hidden shadow-slate-300 col-span-2",
+      "shadow-lg rounded-xl overflow-hidden shadow-slate-300 col-span-2",
       className
     )}
     id="chart"

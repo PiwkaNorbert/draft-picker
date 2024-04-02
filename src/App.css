@@ -4,6 +4,7 @@
 
 @layer base {
   :root {
+    
     --background: 0 0% 100%;
     --foreground: 222.2 47.4% 11.2%;
 
@@ -87,7 +88,9 @@
   box-sizing: border-box;
   padding: 0;
   margin: 0;
-  background-color: rgb(255, 0, 0,0.04);
+  /* background-color: rgb(255, 0, 0,0.04); */
+  /* color: #dc2626 */
+  color: #2563eb
 }
 body,
 h1,
@@ -195,11 +198,11 @@ body {
 }
 
 .banned-pick-slot.filled {
-  background-color: #ff6b6b;
+  background-color: #dc2626;
 }
 
 .banned-pick-slot.empty:hover {
-  background-color: #ff6b6b;
+  background-color: #dc2626;
   color: #fff;
 }
 
