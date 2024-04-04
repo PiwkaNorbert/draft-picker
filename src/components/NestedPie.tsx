@@ -1,9 +1,9 @@
-import NestedPieChart from "@toast-ui/chart/nestedPie";
 import "@toast-ui/chart/dist/toastui-chart.min.css";
-import { useRef, useEffect, useMemo, useCallback, FC, useState } from "react";
+import { useMemo, useCallback, FC } from "react";
 import { TeamAvg } from "../types/util";
 import { cn } from "../lib/utils";
 import { PieChart } from '@mui/x-charts/PieChart';
+import { Player } from "../types/graphs";
 
 
 const NestedPie: FC<{ teamAvg: TeamAvg | null, selectedStat: string, title: string, className: string }> = ({ teamAvg, selectedStat, title, className }) => {
@@ -11,11 +11,10 @@ const NestedPie: FC<{ teamAvg: TeamAvg | null, selectedStat: string, title: stri
     const getDamageAvg = useCallback((
       teamColor: "red_team" | "blue_team",
       playerIndex: number
-    ): number => {
+    ): number  => {
       if (teamAvg === null) return 0;
-      
-      return teamAvg[teamColor][playerIndex]?.stats
-        ?.[selectedStat] || 0
+
+      return (teamAvg[teamColor][playerIndex] as unknown as {[key: string]: number})[selectedStat] || 0
     }, [teamAvg, selectedStat]);
 
 
@@ -26,26 +25,24 @@ const NestedPie: FC<{ teamAvg: TeamAvg | null, selectedStat: string, title: stri
 
     const data: ChartData[] = useMemo(() => {
       const result: ChartData[] = [];
-      const teams = ['blue_team', 'red_team'];
+      const teams: ("red_team" | "blue_team")[] = ['red_team', 'blue_team'];
 
       teams.forEach((team) => {
-        if (teamAvg && teamAvg[team]) {
+        if (teamAvg && (teamAvg as unknown as {[key: string]: number | string})[team]) {
           for (let i = 0; i < 5; i++) {
 
             const player = teamAvg[team][i];
-
-            const parentName = team.charAt(0).toUpperCase() + team.slice(1);
-            console.log(player, parentName);
+            const champName = (player as unknown as Player).championName;
             
             if (player) {
               result.push({
-                label: player.champion ?? '',
-                value: getDamageAvg(team as "red_team" | "blue_team", i) ?? 0,
+                label: champName ?? '',
+                value: getDamageAvg(team, i) ?? 0,
               });
             }
         }
       }});
-      console.log(result);
+ 
       
       return result;
 
@@ -53,11 +50,10 @@ const NestedPie: FC<{ teamAvg: TeamAvg | null, selectedStat: string, title: stri
 
 
     const series = [
-
       {
         innerRadius: 25,
         outerRadius: 120,
-        id: 'series-2',
+        id: title,
         cornerRadius: 3,
         paddingAngle: 1,
         cx: 150,

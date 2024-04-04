@@ -91,44 +91,78 @@ export default Graphs
 
 const groupedStatOptions = [
   {
-    name: "Damage Dealt",
+    name: "Damage Dealt - Type",
     stats: [
-      {value: "damageDealtToBuildings__avg", name :"Damage Dealt To Buildings" },
-      {value: "damageDealtToObjectives__avg", name: "Damage Dealt To Objectives"},
-      {value: "damageDealtToTurrets__avg", name: "Damage Dealt To Turrets"},
+      {value: "magicDamageDealt", name: "Magic Damage Dealt"},
+      {value: "physicalDamageDealt", name: "Physical Damage Dealt"},
+      {value: "trueDamageDealt", name: "True Damage Dealt"},
+      {value: "totalDamageDealt", name: "Total Damage Dealt"},
+
+    ]
+  },
+  {
+    name: "Damage Dealt - Target",
+    stats: [
+      {value: "damageDealtToBuildings", name: "Damage Dealt To Buildings"},
+      {value: "damageDealtToObjectives", name: "Damage Dealt To Objectives"},
+      {value: "damageDealtToTurrets", name: "Damage Dealt To Turrets"},
     ]
   },
   {
     name: "Damage Taken",
     stats: [
-      {value: "damageSelfMitigated__avg", name: "Damage Self Mitigated"},
-      {value: "magicDamageTaken__avg", name: "Magic Damage Taken"},
-      {value: "physicalDamageTaken__avg", name: "Physical Damage Taken"},
-      {value: "trueDamageTaken__avg", name: "True Damage Taken"},
-      {value: "trueDamageTaken__avg", name: "True Damage Taken"},
+      {value: "damageSelfMitigated", name: "Damage Self Mitigated"},
+      {value: "magicDamageTaken", name: "Magic Damage Taken"},
+      {value: "physicalDamageTaken", name: "Physical Damage Taken"},
+      {value: "totalDamageTaken", name: "Total Damage Taken"},
+      {value: "trueDamageTaken", name: "True Damage Taken"},
     ]
   },
   {
     name: "Damage Dealt To Champions",
     stats: [
-      {value: "magicDamageDealtToChampions__avg", name: "Magic Damage Dealt To Champions"},
-      {value: "physicalDamageDealtToChampions__avg", name: "Physical Damage Dealt To Champions"},
-      {value: "trueDamageDealtToChampions__avg", name: "True Damage Dealt To Champions"},
+      {value: "magicDamageDealtToChampions", name: "Magic Damage Dealt To Champions"},
+      {value: "physicalDamageDealtToChampions", name: "Physical Damage Dealt To Champions"},
+      {value: "totalDamageDealtToChampions", name: "Total Damage Dealt To Champions"},
+      {value: "trueDamageDealtToChampions", name: "True Damage Dealt To Champions"},
     ]
   },
   {
     name: "Healing and Shielding",
     stats: [
-      {value: "totalHeal__avg", name: "Total Heal"},
-      {value: "totalHealsOnTeammates__avg", name: "Total Heals On Teammates"},
-      {value: "totalDamageShieldedOnTeammates__avg", name: "Total Damage Shielded On Teammates"},
+      {value: "totalHeal", name: "Total Heal"},
+      {value: "totalHealsOnTeammates", name: "Total Heals On Teammates"},
+      {value: "totalDamageShieldedOnTeammates", name: "Total Damage Shielded On Teammates"},
     ]
   },
   {
     name: "Crowd Control",
     stats: [
-      {value: "timeCCingOthers__avg", name: "Time CCing Others"},
-      {value: "totalTimeCCDealt__avg", name: "Total Time CC Dealt"},
+      {value: "timeCCingOthers", name: "Time CCing Others"},
+      {value: "totalTimeCCDealt", name: "Total Time CC Dealt"},
+    ]
+  },
+  {
+    name: "Gold",
+    stats: [
+      {value: "goldEarned", name: "Gold Earned"},
+      {value: "goldSpent", name: "Gold Spent"},
+    ]
+  },
+  {
+    name: "Minions and Monsters",
+    stats: [
+      {value: "totalMinionsKilled", name: "Total Minions Killed"},
+      {value: "neutralMinionsKilled", name: "Neutral Minions Killed"},
+    ]
+  },
+  {
+    name: "Vision",
+    stats: [
+      {value: "wardsPlaced", name: "Wards Placed"},
+      {value: "visionWardsBoughtInGame", name: "Vision Wards Bought In Game"},
+      {value: "wardsKilled", name: "Wards Killed"},
+      {value: "visionScore", name: "Vision Score"},
     ]
   },
 ];
