@@ -303,7 +303,7 @@ function App() {
                 </section>
               </div>
 
-              <div className=" overflow-y-scroll overflow-x-clip  mx-auto  flex-grow basis-0 h-[544px]">
+              <div className=" overflow-y-scroll overflow-x-clip  mx-auto  flex-grow basis-0 h-[544px] px-[18px]">
                 <div className="grid grid-cols-3 md:grid-cols-4 w-full lg:grid-cols-6 gap-4 items-center justify-center ">
                   {mappedChampions.map((champion, index) => {
                     return (

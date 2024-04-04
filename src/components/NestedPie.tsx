@@ -1,30 +1,12 @@
 import NestedPieChart from "@toast-ui/chart/nestedPie";
 import "@toast-ui/chart/dist/toastui-chart.min.css";
-import { useRef, useEffect, useMemo, useCallback, FC } from "react";
+import { useRef, useEffect, useMemo, useCallback, FC, useState } from "react";
 import { TeamAvg } from "../types/util";
 import { cn } from "../lib/utils";
+import { PieChart } from '@mui/x-charts/PieChart';
 
 
 const NestedPie: FC<{ teamAvg: TeamAvg | null, selectedStat: string, title: string, className: string }> = ({ teamAvg, selectedStat, title, className }) => {
-
-
-
-    const chartRef = useRef<HTMLDivElement | null>(null);
-
-    const redteamtotal = Array(5)
-    .fill(null)
-    .reduce((total, _, index) => {
-      const value = ~~(teamAvg?.red_team[index]?.stats?.[selectedStat] || 0);
-
-      return total + value;
-    }, 0);
-  
-    const blueteamtotal = Array(5)
-      .fill(null)
-      .reduce((total, _, index) => {
-        const value = ~~(teamAvg?.blue_team[index]?.stats?.[selectedStat] || 0);
-        return total + value;
-      }, 0);
 
     const getDamageAvg = useCallback((
       teamColor: "red_team" | "blue_team",
@@ -37,69 +19,9 @@ const NestedPie: FC<{ teamAvg: TeamAvg | null, selectedStat: string, title: stri
     }, [teamAvg, selectedStat]);
 
 
-    const options = useMemo(()=> ({
-      chart: {
-        title: title,
-        height: 330,
-        width: 330,
-      },
-      series: {
-        clockwise: false,
-        teams: {
-          radiusRange: {
-            inner: "0%",
-            outer: "50%",
-          },
-        },
-        champions: {
-          radiusRange: {
-            inner: "60%",
-            outer: "90%",
-          },
-          dataLabels: {
-            visible: false,
-            pieSeriesName: {
-              visible: true,
-            },
-          },
-        },
-      },
-      exportMenu: {
-        visible: false,
-      },
-
-      theme: {
-        series: {
-          teams: {
-            colors: ["#2563eb","#ef4444"],
-            lineWidth: 1,
-            strokeStyle: "#000000",
-            hover: {
-              lineWidth: 2,
-              strokeStyle: "#000000",
-              shadowColor: "rgba(0, 0, 0, 0.5)",
-              shadowBlur: 10,
-            },
-          },
-          champions: {
-            lineWidth: 1,
-            strokeStyle: "#000000",
-            hover: {
-              lineWidth: 2,
-              strokeStyle: "#000000",
-              shadowColor: "rgba(0, 0, 0, 0.5)",
-              shadowBlur: 0,
-            },
-          },
-        },
-      },
-    }), []);
-
-
     interface ChartData {
-      name: string;
-      parentName: string;
-      data: number;
+      label: string;
+      value: number;
     }
 
     const data: ChartData[] = useMemo(() => {
@@ -117,72 +39,123 @@ const NestedPie: FC<{ teamAvg: TeamAvg | null, selectedStat: string, title: stri
             
             if (player) {
               result.push({
-                name: player.champion,
-                parentName: team === "red_team" ? "Red Team" : "Blue Team",
-                data: getDamageAvg(team as "red_team" | "blue_team", i),
+                label: player.champion ?? '',
+                value: getDamageAvg(team as "red_team" | "blue_team", i) ?? 0,
               });
             }
         }
       }});
-
+      console.log(result);
+      
       return result;
+
     }, [teamAvg, getDamageAvg]);
 
 
+    const series = [
+  
+      {
+        innerRadius: 25,
+        outerRadius: 120,
+        id: 'series-2',
+        cornerRadius: 3,
+        paddingAngle: 1,
+        cx: 150,
+        highlightScope: { faded: 'global', highlighted: 'item' },
+        faded: { innerRadius: 10, additionalRadius: -10, color: 'gray',  },
+        data: data,
+      },
+    ];
 
-  useEffect(() => {
-    let chart: NestedPieChart | null = null;
+    //   const result: ChartData[] = [];
+    //   const teams = ['blue_team', 'red_team'];
 
-    if (chartRef.current) {
-      chart = new NestedPieChart({
-        el: chartRef.current,
-        data: {
-          categories: ["Team Damage", "Champion Damage"],
-          series: [
-            {
-              name: "teams",
-              data: [
-                {
-                  name: "Blue Team",
-                  data: blueteamtotal,
-                },
-                {
-                  name: "Red Team",
-                  data: redteamtotal,
-                },
-              ],
-            },
-            {
-              name: "champions",
-              data: data
-            },
-          ],
-        },
-        options: options,
-      });
-    }
+    //   teams.forEach((team) => {
+    //     if (teamAvg && teamAvg[team]) {
+    //       for (let i = 0; i < 5; i++) {
 
-    // Cleanup function
-    return () => {
-      if (chart) {
-        // Assuming that NestedPieChart has a destroy method
-        chart.destroy();
-      }
-    };
-  }, [teamAvg, selectedStat, redteamtotal, blueteamtotal, getDamageAvg, options, data]);
+    //         const player = teamAvg[team][i];
+
+    //         const parentName = team.charAt(0).toUpperCase() + team.slice(1);
+    //         console.log(player, parentName);
+            
+    //         if (player) {
+    //           result.push({
+    //             id: i, 
+    //             label: player.champion,
+    //             value: getDamageAvg(team as "red_team" | "blue_team", i),
+    //           });
+    //         }
+    //     }
+    //   }});
+
+    //   return result;
+    // }, [teamAvg, getDamageAvg]);
+
+
+  // useEffect(() => {
+  //   let chart: NestedPieChart | null = null;
+
+  //   if (chartRef.current) {
+  //     chart = new NestedPieChart({
+  //       el: chartRef.current,
+  //       data: {
+  //         categories: ["Team Damage", "Champion Damage"],
+  //         series: [
+  //           {
+  //             name: "teams",
+  //             data: [
+  //               {
+  //                 name: "Blue Team",
+  //                 data: blueteamtotal,
+  //               },
+  //               {
+  //                 name: "Red Team",
+  //                 data: redteamtotal,
+  //               },
+  //             ],
+  //           },
+  //           {
+  //             name: "champions",
+  //             data: data
+  //           },
+  //         ],
+  //       },
+  //       options: options,
+  //     });
+  //   }
+
+  //   // Cleanup function
+  //   return () => {
+  //     if (chart) {
+  //       // Assuming that NestedPieChart has a destroy method
+  //       chart.destroy();
+  //     }
+  //   };
+  // }, [teamAvg, selectedStat, redteamtotal, blueteamtotal, getDamageAvg, options, data]);
+
+
 
   return (
-  <div 
-    className={cn(
-      "shadow-lg  shadow-slate-300 col-span-2",
-      className
-    )}
-    id="chart"
-    ref={chartRef} />
+
+    <div className="shadow-lg shadow-slate-300 col-span-2 grid place-items-center p-4">
+      <h2 className=" font-semibold text-sm text-gray-500">{title}</h2>
+      {/* #TODO: dyanamic colors */}
+      <PieChart
+        colors={["#2563eb",  "#3b82f6", "#60a5fa", "#93c5fd", "#bfdbfe", "#ef4444","#f87171","#fca5a5","#fecaca", "#fee2e2"]}
+        height={300}
+        width={300}
+        series={series}
+        slotProps={{
+          legend: { hidden: true },
+        }}
+        
+        // skipAnimation={skipAnimation}
+        />
+      </div>
 
 
   )
-  // return "hi";
 };
 
 export default NestedPie;
