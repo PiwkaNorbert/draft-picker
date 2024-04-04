@@ -271,16 +271,16 @@ function App() {
             handleRightClick={handleRightClick}
           >
             <div className="grid w-fit place-items-center">
-              <div className="flex flex-col lg:flex-row items-center justify-center mb-10 gap-2">
+              <div className="flex flex-col lg:flex-row items-center justify-center mb-10 gap-2 px-[18px] max-w-[613px] mx-auto">
                 <input
-                  className={` h-9 rounded-full place-self-center  border-2 bg-bg px-3 py-1 text-sm w-80 `}
+                  className={` h-9 rounded-full basis-1/3 place-self-center  border-2 bg-bg px-3 py-1 text-sm w-80 `}
                   placeholder="Search"
                   type="text"
                   name="tagSearch"
                   onChange={(e) => changeViewByInput(e)}
                 />
 
-              <section className="flex gap-2">
+              <section className="flex gap-2 flex-1 justify-end">
                 {tags.map((tag, index) => (
                   <button
                   key={index}

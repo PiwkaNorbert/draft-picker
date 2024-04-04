@@ -53,7 +53,7 @@ const NestedPie: FC<{ teamAvg: TeamAvg | null, selectedStat: string, title: stri
 
 
     const series = [
-  
+
       {
         innerRadius: 25,
         outerRadius: 120,
@@ -64,7 +64,7 @@ const NestedPie: FC<{ teamAvg: TeamAvg | null, selectedStat: string, title: stri
         highlightScope: { faded: 'global', highlighted: 'item' },
         faded: { innerRadius: 10, additionalRadius: -10, color: 'gray',  },
         data: data,
-      },
+      }
     ];
 
     //   const result: ChartData[] = [];
@@ -133,18 +133,33 @@ const NestedPie: FC<{ teamAvg: TeamAvg | null, selectedStat: string, title: stri
   //     }
   //   };
   // }, [teamAvg, selectedStat, redteamtotal, blueteamtotal, getDamageAvg, options, data]);
-
-
+  const generateColors = (blueTeamSize: number, redTeamSize: number) => {
+    // const redColors = ["#ef4444","#f87171","#fca5a5","#fecaca", "#fee2e2"];
+    const redColors = ["#ef4444","#f06565","#f38585","#f5a8a8", "#fec8c8"];
+    // const blueColors = ["#2563eb",  "#3b82f6", "#60a5fa", "#93c5fd", "#bfdbfe"];
+    const blueColors = ["#2563eb",  "#3b82f5", "#60a4f8", "#90bff0", "#b8d3f8"];
+  
+    return [
+      ...redColors.slice(0, redTeamSize),
+      ...blueColors.slice(0, blueTeamSize),
+    ];
+  };
+  const blueTeamSize = teamAvg?.blue_team.length ?? 0;
+  const redTeamSize = teamAvg?.red_team.length  ?? 0;
+  const colors = generateColors(blueTeamSize, redTeamSize);
 
   return (
 
-    <div className="shadow-lg shadow-slate-300 col-span-2 grid place-items-center p-4">
+    <div className={cn(
+      "col-span-2 grid place-items-center p-4",
+      className
+    )}>
       <h2 className=" font-semibold text-sm text-gray-500">{title}</h2>
       {/* #TODO: dyanamic colors */}
       <PieChart
-        colors={["#2563eb",  "#3b82f6", "#60a5fa", "#93c5fd", "#bfdbfe", "#ef4444","#f87171","#fca5a5","#fecaca", "#fee2e2"]}
-        height={300}
-        width={300}
+        colors={colors}
+        height={280}
+        width={280}
         series={series}
         slotProps={{
           legend: { hidden: true },

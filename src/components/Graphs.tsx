@@ -34,9 +34,8 @@ const Graphs: FC<{ teamAvg: TeamAvg | null }> = ({ teamAvg }) => {
   }, [api])
   
   return (
-    <div className=" py-6 px-12 rounded-2xl flex flex-col gap-y-10 container">
-      <h1>Graphs</h1>
-      <h2>{title}</h2>
+    <div className=" py-6 px-12 rounded-2xl flex flex-col gap-y-4 container">
+      <h1>{title}</h1>
 
         <Carousel
           opts={{
