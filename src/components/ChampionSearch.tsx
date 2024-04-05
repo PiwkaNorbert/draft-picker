@@ -1,57 +1,103 @@
-import { useCallback } from "react";
-import useChampionQuery from "../API/useChampionQuery";
+import { useLocation, useNavigate, useSearchParams } from "react-router-dom";
 import { tags } from "../constants";
+import { useDebouncedCallback } from 'use-debounce'
+import useChampionQuery from "../API/useChampionQuery"
 
 export const ChampionSearch: React.FC = () => {
 
+  const { status, error, isLoading } = useChampionQuery('')
 
-  const { setChampionFilterByInput, championFilterByTags, setChampionFilterByTags,
-  } = useChampionQuery();
+  const [searchParams] = useSearchParams()
+  const { pathname } = useLocation()
+  const navigate  = useNavigate()
 
-  const changeViewByInput = useCallback(
-    (evt: React.ChangeEvent<HTMLInputElement>) => setChampionFilterByInput([...evt.target.value.split(" ")]),
-    [setChampionFilterByInput]
-  );
+  const handleSearch = useDebouncedCallback(
+    (e: React.ChangeEvent<HTMLInputElement>) => {
+      const search = e.target.value
+      const params = new URLSearchParams(searchParams)
 
+      if (search) {
+        params.set('search', search)
+      } else {
+        params.delete('search')
+      }
+      navigate(`${pathname}?${params.toString()}`)
+    },
+    500
+  )
 
-  const handleTagClick = (tag: string) => {
-    if (championFilterByTags.includes(tag)) {
-      // remove the tag from the filter if it's already in the filter
-      setChampionFilterByTags((prevTags: string[]) => prevTags.filter((t: string) => t !== tag)
-      );
+  const handleTags = useDebouncedCallback((tag: string) => {
+    const params = new URLSearchParams(searchParams)
+    if (tag) {
+      params.set('tag', tag)
     } else {
-      // add the tag to the filter
-      setChampionFilterByTags((prevTags: string[]) => [...prevTags, tag]);
+      params.delete('tag')
     }
-  };
+    navigate(`${pathname}?${params.toString()}`)
+  }, 500)
+
+  const championFilterByTags = searchParams.get('tag')?.split(',') || []
+
+
+  if (status === 'error') {
+    console.error(error)
+    return null
+  }
+  if (isLoading) {
+    return <div>Loading...</div>
+  }
+
+
 
   return (
     <div className="flex flex-col lg:flex-row items-center justify-center mb-10 gap-2 px-[18px] max-w-[613px] mx-auto">
+   
+   <div role="search" className="relative grid justify-self-center text-[#aaa]">
+      <svg
+        className="absolute bottom-0 left-3 top-0 h-full items-center "
+        xmlns="http://www.w3.org/2000/svg"
+        width="1em"
+        height="1em"
+        fill="currentColor"
+        viewBox="0 0 256 256"
+      >
+        <path d="M229.66,218.34l-50.07-50.06a88.11,88.11,0,1,0-11.31,11.31l50.06,50.07a8,8,0,0,0,11.32-11.32ZM40,112a72,72,0,1,1,72,72A72.08,72.08,0,0,1,40,112Z"></path>
+      </svg>
+      <label htmlFor="search" className="sr-only">
+        Search
+      </label>
       <input
-        className={` h-9 rounded-full basis-1/3 place-self-center  border-2 bg-bg px-3 py-1 text-sm w-80 `}
-        placeholder="Search"
+        className="prose-base block h-full w-full rounded-md border-0 border-border bg-card py-2 pl-10 pr-3.5 text-text-1 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-text-1 sm:leading-6 lg:w-64"
         type="text"
-        name="tagSearch"
-        onChange={(e) => changeViewByInput(e)} />
-
-      <section className="flex gap-2 flex-1 justify-end">
-        {tags.map((tag, index) => (
-          <button
-            key={index}
-            className={`${championFilterByTags.includes(tag)
-                ? `bg-gray-200 dark:text-bg/50 border-selected border-2 border-transparent`
-                : ""} hover:bg-gray-100 rounded-full p-2 hover:border-selected hover:border-2 border-2 border-transparent`}
-            onClick={() => handleTagClick(tag)}
-          >
-            <img
-              src={`/${tag}.webp`}
-              alt={tag}
-              width={24}
-              height={24}
-              className=" w-6 h-6" />
-          </button>
-        ))}
-      </section>
+        id="search"
+        aria-label="Search "
+        placeholder="Search"
+        onChange={(e) => {
+          handleSearch(e)
+        }}
+        defaultValue={searchParams.get('search')?.toString() || ''}
+        autoFocus
+      />
+    </div>
+     <section className="flex gap-2 flex-1 justify-end">
+     {tags.map((tag, index) => (
+       <button
+         key={index}
+         className={`${championFilterByTags.includes(tag)
+             ? `bg-gray-200 dark:text-bg/50 border-selected border-2 border-transparent`
+             : ""} hover:bg-gray-100 rounded-full p-2 hover:border-selected hover:border-2 border-2 border-transparent`}
+         onClick={() => handleTags(tag)}
+       >
+         <img
+           src={`/${tag}.webp`}
+           alt={tag}
+           width={24}
+           height={24}
+           className=" w-6 h-6" />
+       </button>
+     ))}
+   </section>
+     
     </div>
   );
 };

@@ -4,44 +4,60 @@ import { useState } from "react";
 import { filterChampions } from "../Utils/filterChampions";
 import { Root } from "../types/data";
 
-export async function getChampions(signal: any): Promise<Root>{
+export async function getLatestVersion(signal?: AbortSignal) {
   const { data, status } = await axios.get(
-    `http://192.168.15.220:8000/champions-data/`,
-    signal
+    'https://ddragon.leagueoflegends.com/api/versions.json',
+    {
+      signal,
+    }
   );
   if (status !== 200) {
-    throw new Error("Error fetching champions");
+    return 0
   }
-
-  
   return data;
 }
 
-const useChampionQuery = () => {
-  const [championFilterByInput, setChampionFilterByInput] = useState<string[]>(
-    []
-  );
-  const [championFilterByTags, setChampionFilterByTags] = useState<string[]>(
-    []
-  );
+export async function getPatchData (version: string, signal?: AbortSignal): Promise<Root> {
+    const { data, status } = await axios.get(
+        `https://ddragon.leagueoflegends.com/cdn/${version}/data/en_US/champion.json`,
+        {
+        signal,
+        }
+    );
+    if (status !== 200) {
+        throw new Error("Error fetching champions");
+    }
+    
+    return data;
+}
 
-  const useChampionData = useQuery(
-    ["champions"],
-    ({ signal }) => getChampions(signal),
+
+const useChampionQuery = (query?: string) => {
+
+
+  const { data } = useQuery(["latestPatch"], ({ signal }) => getLatestVersion(signal), { enabled: !!fetch });
+  const latestVersion = data?.[0];
+
+
+  const selectChampionData = (data: Root) => {
+    const result = filterChampions(
+      data,
+      query
+    )
+    return result 
+  }
+
+  return useQuery<Root>(
+    ["champions", latestVersion],
+    ({ signal }) => getPatchData(latestVersion, signal),
     {
       refetchOnWindowFocus: false,
-      select: (data) =>
-        filterChampions(data, championFilterByInput, championFilterByTags),
+      enabled: !!latestVersion,
+      select: selectChampionData
     }
   );
 
-  return {
-    useChampionData,
-    championFilterByInput,
-    setChampionFilterByInput,
-    championFilterByTags,
-    setChampionFilterByTags,
-  };
+  
 };
 
 export default useChampionQuery;

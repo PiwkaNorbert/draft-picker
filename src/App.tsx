@@ -8,6 +8,7 @@ import Graphs from "./components/Graphs";
 import { Root } from "./types/data";
 import { useDraft } from "./Utils/providers/DraftProvider";
 import { ChampionSearch } from "./components/ChampionSearch";
+import { useSearchParams } from "react-router-dom";
 
 
 
@@ -24,7 +25,7 @@ export default function App() {
 
   const graphsRef = useRef<HTMLDivElement>(null);
 
-  const { useChampionData } = useChampionQuery();
+  const useChampionData = useChampionQuery();
 
 
   useEffect(() => {
@@ -86,7 +87,7 @@ export default function App() {
     <div className="App flex gap-6 p-6">
       <aside className="w-32 bg-red-300">
       <h1>LoL Drafter</h1>
-      <LoginButton />
+      {/* <LoginButton /> */}
 
       </aside>
       <div className="flex-1 ">
@@ -133,25 +134,25 @@ export default function App() {
   );
 }
 
-const LoginButton = () => {
-  return (
-    <a
-      className="rounded-xl bg-white/80 p-4 flex items-center gap-1 text-gray-800 hover:-translate-y-px  hover:bg-white/70"
-      href={`https://discord.com/oauth2/authorize?client_id=1155784301368066099&response_type=code&redirect_uri=http%3A%2F%2Flocalhost%3A5173%2Fauth%2Fdiscord%2Fcallback&scope=identify`}
-    >
-      <svg
-              xmlns="http://www.w3.org/2000/svg"
-              height="1em"
-              width="1em"
-              stroke="currentColor"
-              fill="currentColor"
-              viewBox="0 0 256 256"
-            >
-              <path d="M141.66,133.66l-40,40a8,8,0,0,1-11.32-11.32L116.69,136H24a8,8,0,0,1,0-16h92.69L90.34,93.66a8,8,0,0,1,11.32-11.32l40,40A8,8,0,0,1,141.66,133.66ZM192,32H136a8,8,0,0,0,0,16h56V208H136a8,8,0,0,0,0,16h56a16,16,0,0,0,16-16V48A16,16,0,0,0,192,32Z"></path>
-          </svg>
-        Login 
-    </a>
-  );
-};
+// const LoginButton = () => {
+//   return (
+//     <a
+//       className="rounded-xl bg-white/80 p-4 flex items-center gap-1 text-gray-800 hover:-translate-y-px  hover:bg-white/70"
+//       href={`https://discord.com/oauth2/authorize?client_id=1155784301368066099&response_type=code&redirect_uri=http%3A%2F%2Flocalhost%3A5173%2Fauth%2Fdiscord%2Fcallback&scope=identify`}
+//     >
+//       <svg
+//               xmlns="http://www.w3.org/2000/svg"
+//               height="1em"
+//               width="1em"
+//               stroke="currentColor"
+//               fill="currentColor"
+//               viewBox="0 0 256 256"
+//             >
+//               <path d="M141.66,133.66l-40,40a8,8,0,0,1-11.32-11.32L116.69,136H24a8,8,0,0,1,0-16h92.69L90.34,93.66a8,8,0,0,1,11.32-11.32l40,40A8,8,0,0,1,141.66,133.66ZM192,32H136a8,8,0,0,0,0,16h56V208H136a8,8,0,0,0,0,16h56a16,16,0,0,0,16-16V48A16,16,0,0,0,192,32Z"></path>
+//           </svg>
+//         Login 
+//     </a>
+//   );
+// };
 
 
