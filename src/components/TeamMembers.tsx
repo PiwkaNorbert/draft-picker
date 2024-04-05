@@ -1,12 +1,13 @@
+import { useDraft } from "../Utils/providers/DraftProvider";
+
 export const TeamMembers = ({
   children,
-  bluePicks,
-  redPicks,
   version,
   handleRightClick,
-}) => {
+}: {children: React.ReactNode, version: string, handleRightClick: any} ) => {
 
   // #TODO: on rightclick update the bans array with the selected champion since itss not recalculating the graph
+  const { bluePicks, redPicks }  = useDraft()
 
   return (
     <>

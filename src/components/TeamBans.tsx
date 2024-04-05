@@ -1,4 +1,7 @@
-const TeamBans = ({ blueBans, redBans, version, handleRightClick }) => {
+import { useDraft } from "../Utils/providers/DraftProvider";
+
+const TeamBans = ({ version, handleRightClick }) => {
+  const { blueBans, redBans} = useDraft()
 
   return (
     <div className="w-full flex justify-between gap-2 mx-auto">

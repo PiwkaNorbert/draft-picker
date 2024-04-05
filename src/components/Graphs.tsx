@@ -1,7 +1,6 @@
 import "@toast-ui/chart/dist/toastui-chart.min.css";
 import NestedPie from "./NestedPie";
 import { FC, useEffect, useState } from "react";
-import { TeamAvg } from "../types/util";
 
 
 import {
@@ -12,10 +11,12 @@ import {
   CarouselNext,
   CarouselPrevious,
 } from "../../src/components/ui/carousel";
+import { useDraft } from "../Utils/providers/DraftProvider";
 
 
-const Graphs: FC<{ teamAvg: TeamAvg | null }> = ({ teamAvg }) => {
+const Graphs: FC = () => {
 
+  const { teamAvg } = useDraft();
   const [api, setApi] = useState<CarouselApi>()
   const [title, setTitle] = useState(groupedStatOptions[0].name); // Add this line
 
@@ -93,8 +94,8 @@ const groupedStatOptions = [
   {
     name: "Damage Dealt - Type",
     stats: [
-      {value: "magicDamageDealt", name: "Magic Damage Dealt"},
       {value: "physicalDamageDealt", name: "Physical Damage Dealt"},
+      {value: "magicDamageDealt", name: "Magic Damage Dealt"},
       {value: "trueDamageDealt", name: "True Damage Dealt"},
       {value: "totalDamageDealt", name: "Total Damage Dealt"},
 
@@ -103,36 +104,36 @@ const groupedStatOptions = [
   {
     name: "Damage Dealt - Target",
     stats: [
+      {value: "damageDealtToTurrets", name: "Damage Dealt To Turrets"},
       {value: "damageDealtToBuildings", name: "Damage Dealt To Buildings"},
       {value: "damageDealtToObjectives", name: "Damage Dealt To Objectives"},
-      {value: "damageDealtToTurrets", name: "Damage Dealt To Turrets"},
     ]
   },
   {
     name: "Damage Taken",
     stats: [
-      {value: "damageSelfMitigated", name: "Damage Self Mitigated"},
-      {value: "magicDamageTaken", name: "Magic Damage Taken"},
       {value: "physicalDamageTaken", name: "Physical Damage Taken"},
-      {value: "totalDamageTaken", name: "Total Damage Taken"},
+      {value: "magicDamageTaken", name: "Magic Damage Taken"},
       {value: "trueDamageTaken", name: "True Damage Taken"},
+      {value: "damageSelfMitigated", name: "Damage Self Mitigated"},
+      {value: "totalDamageTaken", name: "Total Damage Taken"},
     ]
   },
   {
     name: "Damage Dealt To Champions",
     stats: [
-      {value: "magicDamageDealtToChampions", name: "Magic Damage Dealt To Champions"},
       {value: "physicalDamageDealtToChampions", name: "Physical Damage Dealt To Champions"},
-      {value: "totalDamageDealtToChampions", name: "Total Damage Dealt To Champions"},
+      {value: "magicDamageDealtToChampions", name: "Magic Damage Dealt To Champions"},
       {value: "trueDamageDealtToChampions", name: "True Damage Dealt To Champions"},
+      {value: "totalDamageDealtToChampions", name: "Total Damage Dealt To Champions"},
     ]
   },
   {
     name: "Healing and Shielding",
     stats: [
-      {value: "totalHeal", name: "Total Heal"},
       {value: "totalHealsOnTeammates", name: "Total Heals On Teammates"},
       {value: "totalDamageShieldedOnTeammates", name: "Total Damage Shielded On Teammates"},
+      {value: "totalHeal", name: "Total Heal"},
     ]
   },
   {
@@ -143,25 +144,22 @@ const groupedStatOptions = [
     ]
   },
   {
-    name: "Gold",
+    name: "Gold n' Farming (to be changed)",
     stats: [
       {value: "goldEarned", name: "Gold Earned"},
       {value: "goldSpent", name: "Gold Spent"},
-    ]
-  },
-  {
-    name: "Minions and Monsters",
-    stats: [
+
       {value: "totalMinionsKilled", name: "Total Minions Killed"},
       {value: "neutralMinionsKilled", name: "Neutral Minions Killed"},
     ]
   },
+
   {
     name: "Vision",
     stats: [
       {value: "wardsPlaced", name: "Wards Placed"},
-      {value: "visionWardsBoughtInGame", name: "Vision Wards Bought In Game"},
       {value: "wardsKilled", name: "Wards Killed"},
+      {value: "visionWardsBoughtInGame", name: "Vision Wards Bought In Game"},
       {value: "visionScore", name: "Vision Score"},
     ]
   },

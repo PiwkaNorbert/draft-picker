@@ -1,16 +1,69 @@
+import { useMutation } from "@tanstack/react-query";
+import { useDraft } from "../Utils/providers/DraftProvider";
 import { Champion } from "../types";
+import axios from "axios";
+import { DraftObject } from "../types/util";
 
 export function CharacterCard({
   character,
   version,
-  fill_next_null,
-  draft,
-  removeFromDraft,
-  redPicks,
-  bluePicks,
-  redBans,
-  blueBans,
 }) {
+  const { redPicks, bluePicks, redBans, blueBans, draft, setDraft, setTeamavg } = useDraft()
+  console.log(draft);
+  
+
+
+    const sendDraftMutation = useMutation((data) => {
+      return axios.post(`http://192.168.15.220:8000/game-avg/`, data);
+    });
+    const { mutate: updateGameAvg } = sendDraftMutation;
+  
+    function fill_next_null(clicked_champ: string, currentDraft: DraftObject) {
+      for (const [key, value] of Object.entries(currentDraft)) {
+        if (value === null) {
+  
+          const newDraft = {
+            ...currentDraft,
+            [key]: clicked_champ,
+          };
+  
+          setDraft(newDraft);
+          if (
+            (redPicks && redPicks[0] !== null) ||
+            (bluePicks && bluePicks[0] !== null)
+          ) {
+            updateGameAvg(newDraft, {
+              onSuccess: (data) => {
+                const { data: teamAvg } = data;
+                setTeamavg(teamAvg);
+              },
+            });
+          }
+          break;
+        }
+      }
+    }
+  
+      // on right click check the draft and if the champion is in the draft then remove it from the draft
+      function removeFromDraft(clicked_champ: string, currentDraft: DraftObject) {
+        for (const [key, value] of Object.entries(currentDraft)) {
+          if (value === clicked_champ) {
+            const newDraft = {
+              ...currentDraft,
+              [key]: null,
+            };
+            setDraft(newDraft);
+    
+            updateGameAvg(newDraft, {
+              onSuccess: (data) => {
+                const { data: teamAvg } = data;
+                setTeamavg(teamAvg);
+              },
+            });
+            break;
+          }
+        }
+      }
 
 
   const isCharacterInRed = (champion: Champion) => {

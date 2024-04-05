@@ -32,7 +32,7 @@ const NestedPie: FC<{ teamAvg: TeamAvg | null, selectedStat: string, title: stri
           for (let i = 0; i < 5; i++) {
 
             const player = teamAvg[team][i];
-            const champName = (player as unknown as Player).championName;
+            const champName = (player as unknown as Player)?.championName;
             
             if (player) {
               result.push({
