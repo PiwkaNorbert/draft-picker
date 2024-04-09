@@ -3,20 +3,34 @@ import { useDraft } from "../Utils/providers/DraftProvider";
 import { Champion } from "../types";
 import axios from "axios";
 import { DraftObject } from "../types/util";
+import { usePatch } from "../Utils/providers/PatchProvider";
+import { useEffect } from "react";
 
 export function CharacterCard({
   character,
   version,
 }) {
   const { redPicks, bluePicks, redBans, blueBans, draft, setDraft, setTeamavg } = useDraft()
-  console.log(draft);
-  
 
+  
+    const { patch  } = usePatch();
 
     const sendDraftMutation = useMutation((data) => {
-      return axios.post(`http://192.168.15.220:8000/game-avg/`, data);
+      return axios.post(`http://192.168.15.220:8000/game-avg/?patch=${patch}`, data);
     });
     const { mutate: updateGameAvg } = sendDraftMutation;
+
+    useEffect(() => {
+      if (draft) {
+        updateGameAvg(draft, {
+          onSuccess: (data) => {
+            const { data: teamAvg } = data;
+            setTeamavg(teamAvg);
+          },
+        });
+      }
+    }, [patch]); // This will trigger the effect whenever `patch` changes
+  
   
     function fill_next_null(clicked_champ: string, currentDraft: DraftObject) {
       for (const [key, value] of Object.entries(currentDraft)) {
@@ -107,6 +121,7 @@ export function CharacterCard({
         // loading={index < 24 ? "eager" : "lazy"}
         loading={"eager"}
       />
+      {patch}
       <div
         className={`absolute w-[5rem] h-[76px] ${
           disableCharacter ? " rounded-lg opacity-30" : ""

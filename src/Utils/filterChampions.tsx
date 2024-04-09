@@ -1,40 +1,32 @@
-import { Root } from "../types/data";
+import { Root, Data } from "../types/data";
+import { QueryParams } from "../types/util";
 
 export const filterChampions = (
-  data: Root,
-  query?: string
-)  => {
+  data?: Root,
+  query?: QueryParams
+): Root | undefined => {
+  if (!data) return undefined;
   if (!query) return data;
 
-  const oldData = data;
-  console.log(data);
+  const { search, tags = [] } = query;
+
+  const newData: Data = { ...data.data };
   
 
-  const { data: Champions } = data;
+  if (search) {
+    Object.keys(newData).forEach(key => {
+      if (!key.toLowerCase().includes(search.toLowerCase())) {
+        delete newData[key];
+      }
+    });
+  }
 
-  // let filteredChampions = Champions;
-  // // sort packs by input value
-  // if (championFilterByInput.length > 0 || championFilterByTags.length > 0) {
-  //   filteredChampions = Object.entries(Champions)
-  //     .filter(([_, value]: [string, unknown]) => {
-  //       const champion = value as Champion;
-  //       if (championFilterByInput.length > 0) {
-  //         return championFilterByInput.every((input) =>
-  //           champion.name.toLowerCase().includes(input.toLowerCase())
-  //         );
-  //       }
-  //       if (championFilterByTags.length > 0) {
-  //         return championFilterByTags.every((tag) => {
-  //           return champion.tags.includes(tag);
-  //         });
-  //       }
-  //     })
-  //     .reduce((obj: any, key) => {
-  //       obj[key[0]] = key[1];
-
-  //       return obj;
-  //     }, {});
-  // }
-
-  // return { ...oldData, data: filteredChampions };
-};
+  if (tags.length > 0) {
+    Object.keys(newData).forEach(key => {
+      if (!tags.every(tag => newData[key].tags.includes(tag))) {
+        delete newData[key];
+      }
+    });
+  }
+  return { ...data, data: newData };
+}

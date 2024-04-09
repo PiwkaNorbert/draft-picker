@@ -38,3 +38,8 @@ export interface DraftObject {
     Blue_pick5: string | null;
     Red_pick5: string | null;
   }
+
+  export interface QueryParams {
+    tags: string[];
+    search: string;
+  }

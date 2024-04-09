@@ -4,9 +4,12 @@ import { TeamAvg } from "../types/util";
 import { cn } from "../lib/utils";
 import { PieChart } from '@mui/x-charts/PieChart';
 import { Player } from "../types/graphs";
+import { usePatch } from "../Utils/providers/PatchProvider";
 
 
 const NestedPie: FC<{ teamAvg: TeamAvg | null, selectedStat: string, title: string, className: string }> = ({ teamAvg, selectedStat, title, className }) => {
+
+    const { patch } = usePatch();
 
     const getDamageAvg = useCallback((
       teamColor: "red_team" | "blue_team",
@@ -15,7 +18,7 @@ const NestedPie: FC<{ teamAvg: TeamAvg | null, selectedStat: string, title: stri
       if (teamAvg === null) return 0;
 
       return (teamAvg[teamColor][playerIndex] as unknown as {[key: string]: number})[selectedStat] || 0
-    }, [teamAvg, selectedStat]);
+    }, [teamAvg, selectedStat, patch]);
 
 
     interface ChartData {
@@ -46,7 +49,7 @@ const NestedPie: FC<{ teamAvg: TeamAvg | null, selectedStat: string, title: stri
       
       return result;
 
-    }, [teamAvg, getDamageAvg]);
+    }, [teamAvg, getDamageAvg, patch]);
 
 
     const series = [

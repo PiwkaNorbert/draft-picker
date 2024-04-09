@@ -1,13 +1,19 @@
 import { useLocation, useNavigate, useSearchParams } from "react-router-dom";
-import { tags } from "../constants";
+import { tags as buttonTags } from "../constants";
 import { useDebouncedCallback } from 'use-debounce'
 import useChampionQuery from "../API/useChampionQuery"
 
 export const ChampionSearch: React.FC = () => {
 
-  const { status, error, isLoading } = useChampionQuery('')
-
   const [searchParams] = useSearchParams()
+  const tags = searchParams.get('tag')?.split(',') || []
+  const search = searchParams.get('search') || ''
+  const query = {tags, search}
+
+
+
+  const { status, error, isLoading } = useChampionQuery(query)
+
   const { pathname } = useLocation()
   const navigate  = useNavigate()
 
@@ -26,18 +32,26 @@ export const ChampionSearch: React.FC = () => {
     500
   )
 
-  const handleTags = useDebouncedCallback((tag: string) => {
-    const params = new URLSearchParams(searchParams)
-    if (tag) {
-      params.set('tag', tag)
-    } else {
-      params.delete('tag')
-    }
-    navigate(`${pathname}?${params.toString()}`)
-  }, 500)
+const handleTags = useDebouncedCallback((newTag: string) => {
+  const params = new URLSearchParams(searchParams)
+  const existingTags = params.get('tag')?.split(',') || []
+  
+  let updatedTags;
+  if (existingTags.includes(newTag)) {
+    updatedTags = existingTags.filter(tag => tag !== newTag)
+  } else {
+    updatedTags = [...new Set([...existingTags, newTag])]
+  }
+  
+  if (updatedTags.length > 0) {
+    params.set('tag', updatedTags.join(','))
+  } else {
+    params.delete('tag')
+  }
+  navigate(`${pathname}?${params.toString()}`)
+}, 50)
 
-  const championFilterByTags = searchParams.get('tag')?.split(',') || []
-
+const championFilterByTags = searchParams.get('tag')?.split(',') || []
 
   if (status === 'error') {
     console.error(error)
@@ -80,7 +94,7 @@ export const ChampionSearch: React.FC = () => {
       />
     </div>
      <section className="flex gap-2 flex-1 justify-end">
-     {tags.map((tag, index) => (
+     {buttonTags.map((tag, index) => (
        <button
          key={index}
          className={`${championFilterByTags.includes(tag)

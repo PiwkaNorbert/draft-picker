@@ -5,18 +5,10 @@ import { TeamMembers } from "./components/TeamMembers";
 import useChampionQuery from "./API/useChampionQuery";
 import TeamBans from "./components/TeamBans";
 import Graphs from "./components/Graphs";
-import { Root } from "./types/data";
+import { Root, Champion } from "./types/data";
 import { useDraft } from "./Utils/providers/DraftProvider";
 import { ChampionSearch } from "./components/ChampionSearch";
 import { useSearchParams } from "react-router-dom";
-
-
-
-interface Champion {
-  championName?: string;
-  [key: string]: any;
-}
-
 
 
 export default function App() {
@@ -24,8 +16,12 @@ export default function App() {
   const { draft, setDraft } = useDraft();
 
   const graphsRef = useRef<HTMLDivElement>(null);
+  const [searchParams] = useSearchParams()
+  const tags = searchParams.get('tag')?.split(',') || []
+  const search = searchParams.get('search') || ''
+  const query = {tags, search}
 
-  const useChampionData = useChampionQuery();
+  const useChampionData = useChampionQuery(query);
 
 
   useEffect(() => {
@@ -55,8 +51,6 @@ export default function App() {
   };
 
 
-
-
   if (useChampionData.isLoading) {
     return <div>Loading...</div>;
   }
@@ -66,31 +60,21 @@ export default function App() {
   const mappedChampions: Champion[] = [];
   
   const championData = useChampionData.data as Root;
+  
   // Iterate over the object keys (champion names)
   for (const championName in championData.data) {
+    
     if (Object.prototype.hasOwnProperty.call(championData.data, championName)) {
       const champion = championData.data[championName];
-      // console.log(champion);
-      // Add additional properties or manipulate the data as needed
-      // For example, you can add the champion name as a property
       champion.championName = championName;
 
       // Push the champion data to the mappedChampions array
       mappedChampions.push(champion);
     }
   }
-  console.log(championData);
-  
-  
 
   return (
-    <div className="App flex gap-6 p-6">
-      <aside className="w-32 bg-red-300">
-      <h1>LoL Drafter</h1>
-      {/* <LoginButton /> */}
-
-      </aside>
-      <div className="flex-1 ">
+    <>
 
       <section className="snap-start xl:w-[900px] h-screen mx-auto">
         <TeamBans
@@ -125,12 +109,11 @@ export default function App() {
       </section>
 
       <section className=" h-screen snap-start p-10 px-20 bg-white flex flex-col" ref={graphsRef}>
-              <Graphs  />
-       
+          <Graphs  />
       </section>
-      </div>
+  
 
-    </div>
+    </>
   );
 }
 
