@@ -56,7 +56,7 @@ export function CharacterCard({
         height={76}
         alt={character.name}
         // loading={index < 24 ? "eager" : "lazy"}
-        loading={"eager"}
+        loading={'lazy'}
       />
       <div
         className={`absolute w-[5rem] h-[76px] ${
