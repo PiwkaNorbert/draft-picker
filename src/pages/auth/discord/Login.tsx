@@ -1,19 +1,19 @@
-export interface LoginProps {
-  access_token: string;
-  expires_in: string;
-  refresh_token: string;
-  scope: string;
-  identify: string;
-  token_type: string;
-  Bearer: string;
-  expires_at: string;
-}
+// interface LoginProps {
+//   access_token: string;
+//   expires_in: string;
+//   refresh_token: string;
+//   scope: string;
+//   identify: string;
+//   token_type: string;
+//   Bearer: string;
+//   expires_at: string;
+// }
 // import useDiscordProfileData from "../API/useDiscordProfileData";
-import { useSearchParams, Navigate } from "react-router-dom";
+// import { useSearchParams } from "react-router-dom";
 
 const Login = () => {
-  const [searchParams] = useSearchParams();
-  const returnUrl = searchParams.get("returnUrl");
+  // const [searchParams] = useSearchParams();
+  // const returnUrl = searchParams.get("returnUrl");
   // const { data, isLoading, isError } = useDiscordProfileData();
 
   // if (isLoading) {

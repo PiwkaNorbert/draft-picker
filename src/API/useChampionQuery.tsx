@@ -3,19 +3,8 @@ import axios from "axios";
 import { filterChampions } from "../Utils/filterChampions";
 import { Root } from "../types/data";
 import { QueryParams } from "../types/util";
+import { getLatestVersion } from "./fetch";
 
-export async function getLatestVersion(signal?: AbortSignal) {
-  const { data, status } = await axios.get(
-    'https://ddragon.leagueoflegends.com/api/versions.json',
-    {
-      signal,
-    }
-  );
-  if (status !== 200) {
-    return 0
-  }
-  return data;
-}
 
 export async function getPatchData (version: string, signal?: AbortSignal): Promise<Root> {
     const { data, status } = await axios.get(
@@ -36,8 +25,8 @@ export async function getPatchData (version: string, signal?: AbortSignal): Prom
 const useChampionQuery = (query?: QueryParams) => {
 
 
-  const { data } = useQuery(["latestPatch"], ({ signal }) => getLatestVersion(signal), { enabled: !!fetch });
-  const latestVersion = data?.[0];
+  const { data: version } = useQuery(["latestPatch"], ({ signal }) => getLatestVersion(signal), { enabled: !!fetch });
+  const latestVersion = version?.[0];
 
 
   const selectChampionData = (data: Root|undefined) => {

@@ -1,6 +1,10 @@
-import { useDraft } from "../Utils/providers/DraftProvider";
+import { useDraft } from '../Utils/hooks/useDraft';
+interface TeamBansProps {
+  version: string;
+  handleRightClick: (index: number, team: "blue" | "red", type: "pick" | "ban") => void;
+}
 
-const TeamBans = ({ version, handleRightClick }) => {
+const TeamBans = ({ version, handleRightClick }: TeamBansProps) => {
   const { blueBans, redBans} = useDraft()
 
   return (

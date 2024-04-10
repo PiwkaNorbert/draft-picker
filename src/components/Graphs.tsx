@@ -11,7 +11,7 @@ import {
   CarouselNext,
   CarouselPrevious,
 } from "../../src/components/ui/carousel";
-import { useDraft } from "../Utils/providers/DraftProvider";
+import { useDraft } from '../Utils/hooks/useDraft';
 
 
 const Graphs: FC = () => {

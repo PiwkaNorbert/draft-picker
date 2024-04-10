@@ -1,6 +1,6 @@
 import { NavLink } from 'react-router-dom'
 import useVersions from '../API/usePatches'
-import { usePatch } from '../Utils/providers/PatchProvider'
+import { usePatch } from '../Utils/hooks/usePatch'
 
 import {
   Select,
@@ -19,7 +19,7 @@ const links = [
 
 const SideMenu = () => {
   return (
-    <aside className="sticky top-0 flex h-screen min-h-screen w-[223px] flex-col bg-[#eaeaea] p-8">
+    <aside className="sticky top-0 flex h-screen min-h-screen min-w-[223px] max-w-[223px] flex-col bg-[#eaeaea] p-8">
       <h1>LoL Drafter</h1>
       {/* <LoginButton /> */}
       <nav>

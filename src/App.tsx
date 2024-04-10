@@ -6,14 +6,19 @@ import useChampionQuery from "./API/useChampionQuery";
 import TeamBans from "./components/TeamBans";
 import Graphs from "./components/Graphs";
 import { Root, Champion } from "./types/data";
-import { useDraft } from "./Utils/providers/DraftProvider";
+import { useDraft } from './Utils/hooks/useDraft';
 import { ChampionSearch } from "./components/ChampionSearch";
 import { useSearchParams } from "react-router-dom";
+import { useMutation } from "@tanstack/react-query";
+import { DraftObject } from "./types/util";
+import { usePatch } from './Utils/hooks/usePatch';
+import axios from "axios";
 
 
 export default function App() {
 
-  const { draft, setDraft } = useDraft();
+  const { draft, setDraft, setTeamavg, redPicks, bluePicks } = useDraft();
+  const { patch  } = usePatch();
 
   const graphsRef = useRef<HTMLDivElement>(null);
   const [searchParams] = useSearchParams()
@@ -23,7 +28,26 @@ export default function App() {
 
   const useChampionData = useChampionQuery(query);
 
+  // Send the draft to the backend
+  const sendDraftMutation = useMutation((draft: DraftObject) => {
+    return axios.post(`http://192.168.15.220:8000/game-avg/?patch=${patch}`, draft);
+  });
+  const { mutate: updateGameAvg } = sendDraftMutation;
 
+  // Update the game average when the draft is filled
+  useEffect(() => {
+    if (draft) {
+      updateGameAvg(draft, {
+        onSuccess: (data) => {
+          const { data: teamAvg } = data;
+          
+          setTeamavg(teamAvg);
+        },
+      });
+    }
+  }, [patch, draft, updateGameAvg, setTeamavg]); // This will trigger the effect whenever `patch` changes
+
+  // Scroll to the graphs when the draft is filled
   useEffect(() => {
     // Check if the draft object is filled
     const isDraftFilled = Object.values(draft).every((value) => value !== null);
@@ -34,6 +58,53 @@ export default function App() {
     }
   }, [draft]);
 
+  // fill the next null slot in the draft with the clicked champion
+  function fillNextNull(clicked_champ: string, currentDraft: DraftObject) {
+    for (const [key, value] of Object.entries(currentDraft)) {
+      if (value === null) {
+
+        const newDraft = {
+          ...currentDraft,
+          [key]: clicked_champ,
+        };
+
+        setDraft(newDraft);
+        if (
+          (redPicks && redPicks[0] !== null) ||
+          (bluePicks && bluePicks[0] !== null)
+        ) {
+          updateGameAvg(newDraft, {
+            onSuccess: (data) => {
+              const { data: teamAvg } = data;
+              setTeamavg(teamAvg);
+            },
+          });
+        }
+        break;
+      }
+    }
+  }
+
+  // on right click check the draft and if the champion is in the draft then remove it from the draft
+  function removeFromDraft(clicked_champ: string, currentDraft: DraftObject) {
+    for (const [key, value] of Object.entries(currentDraft)) {
+      if (value === clicked_champ) {
+        const newDraft = {
+          ...currentDraft,
+          [key]: null,
+        };
+        setDraft(newDraft);
+
+        updateGameAvg(newDraft, {
+          onSuccess: (data) => {
+            const { data: teamAvg } = data;
+            setTeamavg(teamAvg);
+          },
+        });
+        break;
+      }
+    }
+  }
 
   // remove the champion from the draft if the user right clicks on the champion
   const handleRightClick = (
@@ -57,13 +128,18 @@ export default function App() {
   if (useChampionData.isError) {
     return <div>Error fetching champions</div>;
   }
+  // check if the length of the data is 0 then return no champions found
+  if (!useChampionData.data || !useChampionData.data.data){
+    return <div>No champions found</div>;
+  }
+  const isEmpty = Object.keys(useChampionData.data.data).length === 0
   const mappedChampions: Champion[] = [];
   
   const championData = useChampionData.data as Root;
   
-  // Iterate over the object keys (champion names)
+  // Map the champions to an array
   for (const championName in championData.data) {
-    
+    // Check if the championName is a property of the championData object
     if (Object.prototype.hasOwnProperty.call(championData.data, championName)) {
       const champion = championData.data[championName];
       champion.championName = championName;
@@ -89,14 +165,18 @@ export default function App() {
             <div className="grid w-fit place-items-center">
               <ChampionSearch />
 
-              <div className=" overflow-y-scroll overflow-x-clip  mx-auto  flex-grow basis-0 h-[544px] px-[18px]">
+              <div className=" overflow-y-scroll overflow-x-clip  mx-auto w-full flex-grow basis-0 h-[544px] px-[18px]">
                 <div className="grid grid-cols-3 md:grid-cols-4 w-full lg:grid-cols-6 gap-4 items-center justify-center ">
-                  {mappedChampions.map((champion, index) => {
+                  {isEmpty ? (
+                    <div className="col-span-full w-full">No champions found</div>
+                  ) :  mappedChampions.map((champion, index) => {
                     return (
                       <CharacterCard
                         key={index}
                         character={champion}
                         version={championData.version}
+                        fillNextNull={fillNextNull}
+                        removeFromDraft={removeFromDraft}
                 
                       />
                     );

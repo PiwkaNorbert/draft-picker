@@ -1,6 +1,6 @@
 // DraftContext.tsx
 
-import React, { createContext, useContext, useState } from 'react';
+import React, { createContext, useState } from 'react';
 import { DraftObject, TeamAvg } from '@/src/types/util';
 
 // Define the shape of your context
@@ -16,7 +16,7 @@ interface DraftContextType {
 }
 
 // Create the context
-const DraftContext = createContext<DraftContextType | undefined>(undefined);
+export const DraftContext = createContext<DraftContextType | undefined>(undefined);
 
 // Create the provider component
 export const DraftProvider = ({ children }: {children: React.ReactNode}) => {
@@ -90,11 +90,3 @@ export const DraftProvider = ({ children }: {children: React.ReactNode}) => {
   );
 };
 
-// Custom hook to access the draft context
-export const useDraft = () => {
-  const context = useContext(DraftContext);
-  if (!context) {
-    throw new Error('useDraft must be used within a DraftProvider');
-  }
-  return context;
-};

@@ -1,6 +1,6 @@
 // DraftContext.tsx
 
-import React, { createContext, useContext, useState } from 'react';
+import React, { createContext, useState } from 'react';
 
 // Define the shape of your context
 interface PatchContextType {
@@ -9,7 +9,7 @@ interface PatchContextType {
 }
 
 // Create the context
-const PatchContext = createContext<PatchContextType | undefined>(undefined);
+export const PatchContext = createContext<PatchContextType | undefined>(undefined);
 
 // Create the provider component
 export const PatchProvider = ({ children }: {children: React.ReactNode}) => {
@@ -24,11 +24,3 @@ export const PatchProvider = ({ children }: {children: React.ReactNode}) => {
   );
 };
 
-// Custom hook to access the draft context
-export const usePatch = () => {
-  const context = useContext(PatchContext);
-  if (!context) {
-    throw new Error('useDraft must be used within a PatchProvider');
-  }
-  return context;
-};

@@ -1,6 +1,4 @@
-import { useSearchParams } from "react-router-dom"
-import useChampionQuery from "../API/useChampionQuery"
-import { Champion } from "../types/data"
+import useChampionAvgQuery from "../API/useChampionAvgQuery"
 import {
   Table,
   TableBody,
@@ -9,15 +7,13 @@ import {
   TableHeader,
   TableRow,
 } from "./ui/table"
+import { usePatch } from "../Utils/hooks/usePatch"
 
 const ChamptionList = () => {
 
-  const [searchParams] = useSearchParams()
-  const tags = searchParams.get('tag')?.split(',') || []
-  const search = searchParams.get('search') || ''
-  const query = {tags, search}
-
-  const { data, isLoading, isError} = useChampionQuery(query);
+  const { patch } = usePatch()
+  const { useChampionAvgData, latestVersion } = useChampionAvgQuery(patch);
+  const { data, isLoading, isError } = useChampionAvgData;
   
 
   if (isLoading) {
@@ -29,6 +25,8 @@ const ChamptionList = () => {
   if (!data) {
     return <div>No champions found</div>
   }
+  console.log(data);
+  
 
 return (
     <Table className="max-w-screen-md">
@@ -37,29 +35,27 @@ return (
         <TableRow>
           <TableCell>#</TableCell>
           <TableCell className="text-left">Name</TableCell>
-          <TableCell>Title</TableCell>
-          <TableCell>Blurb</TableCell>
+          <TableCell className="text-left">Win Ratio</TableCell>
 
 
         </TableRow>
       </TableHeader>
       <TableBody>
-        {Object.values(data.data).map((champion: Champion, idx: number) => { 
+        {data.map((champion, idx: number) => { 
            
           return (
             <TableRow key={champion.id} className="">
               <TableCell>{idx}.</TableCell>
               <TableCell  className="flex gap-2 items-center min-w-max ">
               <img 
-                src={`http://ddragon.leagueoflegends.com/cdn/${data.version}/img/champion/${champion.image.full}`} 
-                alt={champion.name} 
+                src={`http://ddragon.leagueoflegends.com/cdn/${latestVersion}/img/champion/${champion.championName}.png`} 
+                alt={champion.championName} 
                 className="size-14"
                 loading="lazy"
               />
-                {champion.name}
+                {champion.championName}
               </TableCell>
-              <TableCell className="text-left">{champion.title}</TableCell>
-              <TableCell className="text-left">{champion.blurb}</TableCell>
+              <TableCell className="text-left">{champion.win_ratio}%</TableCell>
 
             </TableRow>
           )}

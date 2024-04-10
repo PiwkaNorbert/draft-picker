@@ -10,6 +10,9 @@ import { DraftProvider } from "./Utils/providers/DraftProvider.tsx";
 import { PatchProvider } from "./Utils/providers/PatchProvider.tsx";
 import MainLayout from "./layouts/MainLayout.tsx";
 
+import { ReactQueryDevtools } from '@tanstack/react-query-devtools'
+
+
 const Login = lazy(() => import("./pages/auth/discord/Login.tsx"));
 const ChampionList = lazy(() => import("./components/ChampionList.tsx"));
 
@@ -56,6 +59,7 @@ ReactDOM.createRoot(document.getElementById("root")!).render(
         <RouterProvider router={router} />
         </DraftProvider>
       </PatchProvider>
+      <ReactQueryDevtools initialIsOpen={false} />
     </QueryClientProvider>
   </React.StrictMode>
 );

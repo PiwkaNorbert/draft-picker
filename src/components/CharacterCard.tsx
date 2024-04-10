@@ -1,84 +1,21 @@
-import { useMutation } from "@tanstack/react-query";
-import { useDraft } from "../Utils/providers/DraftProvider";
+import { useDraft } from '../Utils/hooks/useDraft';
 import { Champion } from "../types";
-import axios from "axios";
 import { DraftObject } from "../types/util";
-import { usePatch } from "../Utils/providers/PatchProvider";
-import { useEffect } from "react";
+
+interface CharacterCardProps {
+  character: Champion;
+  version: string;
+  fillNextNull: (id: string, draft: DraftObject) => void;
+  removeFromDraft: (id: string, draft: DraftObject) => void;
+}
 
 export function CharacterCard({
   character,
   version,
-}) {
-  const { redPicks, bluePicks, redBans, blueBans, draft, setDraft, setTeamavg } = useDraft()
-
-  
-    const { patch  } = usePatch();
-
-    const sendDraftMutation = useMutation((data) => {
-      return axios.post(`http://192.168.15.220:8000/game-avg/?patch=${patch}`, data);
-    });
-    const { mutate: updateGameAvg } = sendDraftMutation;
-
-    useEffect(() => {
-      if (draft) {
-        updateGameAvg(draft, {
-          onSuccess: (data) => {
-            const { data: teamAvg } = data;
-            setTeamavg(teamAvg);
-          },
-        });
-      }
-    }, [patch]); // This will trigger the effect whenever `patch` changes
-  
-  
-    function fill_next_null(clicked_champ: string, currentDraft: DraftObject) {
-      for (const [key, value] of Object.entries(currentDraft)) {
-        if (value === null) {
-  
-          const newDraft = {
-            ...currentDraft,
-            [key]: clicked_champ,
-          };
-  
-          setDraft(newDraft);
-          if (
-            (redPicks && redPicks[0] !== null) ||
-            (bluePicks && bluePicks[0] !== null)
-          ) {
-            updateGameAvg(newDraft, {
-              onSuccess: (data) => {
-                const { data: teamAvg } = data;
-                setTeamavg(teamAvg);
-              },
-            });
-          }
-          break;
-        }
-      }
-    }
-  
-      // on right click check the draft and if the champion is in the draft then remove it from the draft
-      function removeFromDraft(clicked_champ: string, currentDraft: DraftObject) {
-        for (const [key, value] of Object.entries(currentDraft)) {
-          if (value === clicked_champ) {
-            const newDraft = {
-              ...currentDraft,
-              [key]: null,
-            };
-            setDraft(newDraft);
-    
-            updateGameAvg(newDraft, {
-              onSuccess: (data) => {
-                const { data: teamAvg } = data;
-                setTeamavg(teamAvg);
-              },
-            });
-            break;
-          }
-        }
-      }
-
+  fillNextNull,
+  removeFromDraft,
+}: CharacterCardProps): React.ReactElement {
+  const { redPicks, bluePicks, redBans, blueBans, draft } = useDraft()
 
   const isCharacterInRed = (champion: Champion) => {
       return redPicks.includes(champion.id) || redBans.includes(champion.id);
@@ -103,7 +40,7 @@ export function CharacterCard({
       className={`justify-self-center relative w-[5rem] flex flex-col items-center gap-1 group cursor-pointer  hover:text-selected`}
       onClick={() => {
         if (disableCharacter) return;
-        fill_next_null(character.id, draft);
+        fillNextNull(character.id, draft);
       }}
       onContextMenu={(event) => {
         event.preventDefault();
@@ -121,7 +58,6 @@ export function CharacterCard({
         // loading={index < 24 ? "eager" : "lazy"}
         loading={"eager"}
       />
-      {patch}
       <div
         className={`absolute w-[5rem] h-[76px] ${
           disableCharacter ? " rounded-lg opacity-30" : ""

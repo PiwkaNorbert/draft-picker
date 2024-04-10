@@ -1,8 +1,8 @@
 export type Champion = {
   id: string;
   name: string;
-  role: string;
-  imageUrl: string;
+  role?: string;
+  imageUrl?: string;
   tags: string[];
 };
 
