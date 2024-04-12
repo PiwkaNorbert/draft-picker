@@ -40,6 +40,7 @@ export default function App() {
       updateGameAvg(draft, {
         onSuccess: (data) => {
           const { data: teamAvg } = data;
+          console.log(teamAvg);
           
           setTeamavg(teamAvg);
         },
@@ -152,7 +153,7 @@ export default function App() {
   return (
     <>
 
-      <section className="snap-start xl:w-[900px] h-screen mx-auto">
+      <section className="snap-start h-screen mx-auto">
         <TeamBans
           version={championData.version}
           handleRightClick={handleRightClick}

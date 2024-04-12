@@ -13,7 +13,7 @@ interface ChartData {
 
 const NestedPie: FC<{ teamAvg: TeamAvg | null, selectedStat: string, title: string, className: string }> = ({ teamAvg, selectedStat, title, className }) => {
   
-
+  
   const colors = useMemo(() => {
     const redColors = ["#ef4444","#f06565","#f38585","#f5a8a8", "#fec8c8"];
     const blueColors = ["#2563eb",  "#3b82f5", "#60a4f8", "#90bff0", "#b8d3f8"];

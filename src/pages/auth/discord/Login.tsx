@@ -15,6 +15,7 @@ const Login = () => {
   // const [searchParams] = useSearchParams();
   // const returnUrl = searchParams.get("returnUrl");
   // const { data, isLoading, isError } = useDiscordProfileData();
+  let data
 
   // if (isLoading) {
   //   return (
@@ -31,18 +32,18 @@ const Login = () => {
   //   );
   // }
 
-  // if (data.in_guild === false) {
+  if (data) {
     return (
       <div className="my-10 flex w-full flex-1 flex-col items-center justify-start">
         <h2 className="mb-6 text-4xl">You are not in the guild</h2>
         <p className="mb-2">
           To login you need to be a part of the CDU community and link your
-          discord and minecraft account{" "}
+          discord and minecraft account{' '}
         </p>
         <a
           href="https://discord.com/invite/playcdu"
           target="_blank"
-          className={` my-4 flex gap-2 rounded-md border border-sec px-4 py-2 font-thin text-blue-500 hover:border-opacity-20 hover:bg-sec/20 dark:hover:bg-hover-2`}
+          className={` border-sec hover:bg-sec/20 dark:hover:bg-hover-2 my-4 flex gap-2 rounded-md border px-4 py-2 font-thin text-blue-500 hover:border-opacity-20`}
         >
           <svg
             xmlns="http://www.w3.org/2000/svg"
@@ -55,13 +56,86 @@ const Login = () => {
           Join our discord
         </a>
       </div>
-    );
-  // } else {
-  //   // display a toast message to the user that they have logged in
+    )
+    // } else {
+  } else {
+    return (
+      <>
+        <main className="hi">
+          <table id="table">
+            <thead>
+              <tr>
+                <th>Nazwa Filii</th>
+                <th className="number-of-codes">Kody Legimi</th>
+                <th style={{ display: 'none' }} className="number-of-codes">
+                  Kody Empik GO
+                </th>
+                <th>Adres</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Biblioteka Główna</td>
+                <td className="number-of-codes-value-legimi">0</td>
+                <td
+                  style={{ display: 'none' }}
+                  className="number-of-codes-value-empik"
+                >
+                  0
+                </td>
+                <td>ul. Powroźnicza 2</td>
+              </tr>
+              <tr>
+                <td >Filia 1</td>
+                <td className="number-of-codes-value-legimi">0</td>
+                <td
+                  style={{ display: 'none' }}
+                  className="number-of-codes-value-empik"
+                >
+                  0
+                </td>
+                <td>ul. J. Dietla 80/82</td>
+              </tr>
+              <tr>
+                
+                <td>Filia 2</td>
+                <td className="number-of-codes-value-legimi">0</td>
+                <td
+                  style={{ display: 'none' }}
+                  className="number-of-codes-value-empik"
+                >
+                  0
+                </td>
+                <td>ul. Krakowska 29</td>
+              </tr>
+              <tr>
+                
+                <td>Filia 3</td>
+                <td className="number-of-codes-value-legimi">0</td>
+                <td
+                  style={{ display: 'none' }}
+                  className="number-of-codes-value-empik"
+                >
+                  0
+                </td>
+                <td>pl. J. Nowaka-Jeziorańskiego 3</td>
+              </tr>
+            </tbody>
+          </table>
+          <div style={{ visibility: 'hidden' }}>
+            <a href="https://info.flagcounter.com/LwWE">
+              <img
+                src="https://s01.flagcounter.com/count2/LwWE/bg_FFFFFF/txt_000000/border_CCCCCC/columns_2/maxflags_10/viewers_0/labels_0/pageviews_1/flags_0/percent_0/"
+                alt="Flag Counter"
+              />
+            </a>
+          </div>
+        </main>
+      </>
+    )
 
-  //   if (!returnUrl) return <Navigate to="/" />;
-
-  //   return <Navigate to={returnUrl} />;
-  // }
-};
-export default Login;
+    //   return <Navigate to={returnUrl} />;
+    // }
+  }
+}
+export default Login
