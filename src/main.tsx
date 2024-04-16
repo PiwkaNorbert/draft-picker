@@ -37,7 +37,6 @@ const router = createBrowserRouter([
       </MainLayout>
       ),
   },
-  // route for all champions
   {
     path: "/champions",
     element: (
@@ -55,6 +54,7 @@ ReactDOM.createRoot(document.getElementById("root")!).render(
     <QueryClientProvider client={queryClient}>
       <PatchProvider>
         <DraftProvider>
+          
         <RouterProvider router={router} />
         </DraftProvider>
       </PatchProvider>

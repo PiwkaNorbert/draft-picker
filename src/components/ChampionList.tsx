@@ -8,7 +8,7 @@ import {
   TableRow,
 } from "./ui/table"
 import { usePatch } from "../Utils/hooks/usePatch"
-import { useEffect, useState } from "react"
+import { useState } from "react"
 import { groupedStatOptions } from "../constants"
 import { Button } from "./ui/button"
 

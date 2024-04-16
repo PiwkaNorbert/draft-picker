@@ -4,7 +4,6 @@ import { TeamAvg } from "../types/util";
 import { cn } from "../lib/utils";
 import { PieChart } from '@mui/x-charts/PieChart';
 import { Player } from "../types/graphs";
-
 interface ChartData {
   label: string;
   value: number;
@@ -96,29 +95,9 @@ const NestedPie: FC<{ teamAvg: TeamAvg | null, selectedStat: string, title: stri
     { value: blueTeamTotal , label: 'Blue Team', color: blueColors[2]},
   ];
 
-  const series = [{
-      innerRadius: 0,
-      outerRadius: 80,
-      id: 'series-1',
-      cornerRadius: 3,
-      paddingAngle: 2,
-      cx: 150,
-      highlightScope: { faded: 'series', highlighted: 'item' },
-      faded: { innerRadius: 10, additionalRadius: -10, color: 'gray',  },
-      data: totalsData,
-    },
-    {
-      innerRadius: 83,
-      outerRadius: 120,
-      id: title,
-      cornerRadius: 3,
-      paddingAngle: 1,
-      cx: 150,
-      highlightScope: { faded: 'series', highlighted: 'item' },
-      faded: { innerRadius: 10, additionalRadius: -10, color: 'gray',  },
-      data: data,
-    }
-  ];
+ 
+
+  
 
   return (
 
@@ -132,7 +111,30 @@ const NestedPie: FC<{ teamAvg: TeamAvg | null, selectedStat: string, title: stri
         colors={undefined}
         height={280}
         width={280}
-        series={series}
+        series={[
+          {
+            data: totalsData,
+            innerRadius: 0,
+            outerRadius: 80,
+            id: 'series-1',
+            cornerRadius: 3,
+            paddingAngle: 2,
+            cx: 150,
+            highlightScope: { faded: 'series', highlighted: 'item'},
+            faded: { innerRadius: 10, additionalRadius: -10, color: 'gray',  },
+          },
+          {
+            data: data,
+            innerRadius: 83,
+            outerRadius: 120,
+            id: title,
+            cornerRadius: 3,
+            paddingAngle: 1,
+            cx: 150,
+            highlightScope: { faded: 'series', highlighted: 'item'},
+            faded: { innerRadius: 10, additionalRadius: -10, color: 'gray',  },
+          }
+        ]}
         slotProps={{
           legend: { hidden: true },
         }}

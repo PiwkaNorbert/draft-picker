@@ -3,7 +3,7 @@ import axios from "axios";
 
 export async function getPatches(signal?: AbortSignal) {
   const { data, status } = await axios.get(
-    `http://192.168.15.220:8000/patches/`,
+    `http://54.37.235.22:8000/patches/`,
     {
       signal,
     }

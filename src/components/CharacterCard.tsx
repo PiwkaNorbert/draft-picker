@@ -9,7 +9,7 @@ interface CharacterCardProps {
   removeFromDraft: (id: string, draft: DraftObject) => void;
 }
 
-export function CharacterCard({
+export default function CharacterCard({
   character,
   version,
   fillNextNull,

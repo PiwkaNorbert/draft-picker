@@ -1,4 +1,5 @@
 export interface ChampionListData {
+  [key: string]: string | number; // Replace `any` with the union of the types of the properties
     id: number
     cache_version: string
     championName: string

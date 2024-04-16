@@ -3,7 +3,7 @@ import { tags as buttonTags } from "../constants";
 import { useDebouncedCallback } from 'use-debounce'
 import useChampionQuery from "../API/useChampionQuery"
 
-export const ChampionSearch: React.FC = () => {
+const ChampionSearch: React.FC = () => {
 
   const [searchParams] = useSearchParams()
   const tags = searchParams.get('tag')?.split(',') || []
@@ -115,3 +115,5 @@ const championFilterByTags = searchParams.get('tag')?.split(',') || []
     </div>
   );
 };
+
+export default ChampionSearch;

@@ -1,18 +1,19 @@
-import { useEffect, useRef } from "react";
+import { Suspense, lazy, useEffect, useRef } from "react";
 import "./App.css";
-import { CharacterCard } from "./components/CharacterCard";
 import { TeamMembers } from "./components/TeamMembers";
 import useChampionQuery from "./API/useChampionQuery";
-import TeamBans from "./components/TeamBans";
-import Graphs from "./components/Graphs";
 import { Root, Champion } from "./types/data";
 import { useDraft } from './Utils/hooks/useDraft';
-import { ChampionSearch } from "./components/ChampionSearch";
 import { useSearchParams } from "react-router-dom";
 import { useMutation } from "@tanstack/react-query";
 import { DraftObject } from "./types/util";
 import { usePatch } from './Utils/hooks/usePatch';
 import axios from "axios";
+
+const CharacterCard = lazy(() => import("./components/CharacterCard"));
+const Graphs = lazy(() => import("./components/Graphs"));
+const TeamBans = lazy(() => import("./components/TeamBans"));
+const ChampionSearch = lazy(() => import("./components/ChampionSearch"));
 
 
 export default function App() {
@@ -30,7 +31,7 @@ export default function App() {
 
   // Send the draft to the backend
   const sendDraftMutation = useMutation((draft: DraftObject) => {
-    return axios.post(`http://192.168.15.220:8000/game-avg/?patch=${patch}`, draft);
+    return axios.post(`http://54.37.235.22:8000/game-avg/?patch=${patch}`, draft);
   });
   const { mutate: updateGameAvg } = sendDraftMutation;
 
@@ -40,8 +41,6 @@ export default function App() {
       updateGameAvg(draft, {
         onSuccess: (data) => {
           const { data: teamAvg } = data;
-          console.log(teamAvg);
-          
           setTeamavg(teamAvg);
         },
       });
@@ -154,34 +153,44 @@ export default function App() {
     <>
 
       <section className="snap-start h-screen mx-auto">
-        <TeamBans
-          version={championData.version}
-          handleRightClick={handleRightClick}
-        />
+
+        <Suspense fallback={<div className="w-full flex justify-between gap-2 mx-auto">Loading...</div>}>
+
+          <TeamBans
+            version={championData.version}
+            handleRightClick={handleRightClick}
+            />
+        </Suspense>
         <section className="flex pt-10 gap-4 justify-between">
           <TeamMembers
             version={championData.version}
             handleRightClick={handleRightClick}
           >
             <div className="grid w-fit place-items-center">
-              <ChampionSearch />
+              <Suspense fallback={<div className="flex flex-col lg:flex-row items-center justify-center mb-10 gap-2 px-[18px] max-w-[613px] mx-auto">Loading...</div>}>
+               <ChampionSearch />
+              </Suspense>
 
               <div className=" overflow-y-scroll overflow-x-clip  mx-auto w-full flex-grow basis-0 h-[544px] px-[18px]">
                 <div className="grid grid-cols-3 md:grid-cols-4 w-full lg:grid-cols-6 gap-4 items-center justify-center ">
-                  {isEmpty ? (
-                    <div className="col-span-full w-full">No champions found</div>
-                  ) :  mappedChampions.map((champion, index) => {
-                    return (
-                      <CharacterCard
-                        key={index}
-                        character={champion}
-                        version={championData.version}
-                        fillNextNull={fillNextNull}
-                        removeFromDraft={removeFromDraft}
-                
-                      />
-                    );
-                  })}
+                  <Suspense fallback={<div className="col-span-full w-full">Loading...</div>}>
+
+                    {isEmpty ? (
+                      <div className="col-span-full w-full">No champions found</div>
+                    ) :  mappedChampions.map((champion, index) => {
+                      return (
+                        <CharacterCard
+                          key={index}
+                          character={champion}
+                          version={championData.version}
+                          fillNextNull={fillNextNull}
+                          removeFromDraft={removeFromDraft}
+                  
+                        />
+                      );
+                    })}
+                  </Suspense>
+
                 </div>
               </div>
             </div>
@@ -190,7 +199,9 @@ export default function App() {
       </section>
 
       <section className=" h-screen snap-start p-10 px-20 bg-white flex flex-col" ref={graphsRef}>
-          <Graphs  />
+        <Suspense fallback={<div>Loading...</div>}>
+          <Graphs />
+        </Suspense>
       </section>
   
 

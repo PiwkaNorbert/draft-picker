@@ -3,9 +3,9 @@ import axios from "axios";
 import { ChampionListData } from "../types/chamption-list";
 import { getLatestVersion } from "./fetch";
 
-export async function getAvgChampion(patch: string, signal?: AbortSignal): Promise<ChampionListData[]> {
+export async function getAvgChampion(patch: string, signal?: AbortSignal) {
   const { data, status } = await axios.get(
-    `http://192.168.15.220:8000/champions-avg/?patch=${patch}`,
+    `http://54.37.235.22:8000/champions-avg/?patch=${patch}`,
     {
       signal,
     }
@@ -23,7 +23,7 @@ const useChampionAvgQuery = (patch: string) => {
 
 
 
-  const useChampionAvgData = useQuery(["champions-avg", patch], ({ signal }) => getAvgChampion(patch, signal), {
+  const useChampionAvgData = useQuery<ChampionListData[]>(["champions-avg", patch], ({ signal }) => getAvgChampion(patch, signal), {
     enabled: !!latestVersion,
     placeholderData: placeholderData
   });
