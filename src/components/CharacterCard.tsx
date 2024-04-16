@@ -1,4 +1,5 @@
 import { useDraft } from '../Utils/hooks/useDraft';
+import { cn } from '../lib/utils';
 import { Champion } from "../types";
 import { DraftObject } from "../types/util";
 
@@ -37,7 +38,7 @@ export default function CharacterCard({
   return (
     <div
       id={character.name}
-      className={`justify-self-center relative w-[5rem] flex flex-col items-center gap-1 group cursor-pointer  hover:text-selected`}
+      className="justify-self-center w-full lg:w-20 flex flex-col items-center gap-1 group cursor-pointer  hover:text-selected"
       onClick={() => {
         if (disableCharacter) return;
         fillNextNull(character.id, draft);
@@ -47,27 +48,30 @@ export default function CharacterCard({
         removeFromDraft(character.id, draft);
       }}
     >
-      <img
-        src={`https://ddragon.leagueoflegends.com/cdn/${version}/img/champion/${character.id}.png`}
-        className={`w-full aspect-square rounded-lg border-2 group-hover:border-6  group-hover:border-selected ${
-          disableCharacter ? "opacity-50 " : ""
-        }`}
-        width={76}
-        height={76}
-        alt={character.name}
-        // loading={index < 24 ? "eager" : "lazy"}
-        loading={'lazy'}
-      />
-      <div
-        className={`absolute w-[5rem] h-[76px] ${
-          disableCharacter ? " rounded-lg opacity-30" : ""
-        }
-        ${characterInRed ? "bg-red-400 text-red-400" : characterInBlue ? "bg-blue-400 text-blue-400" : ""}
-        
-        `}
-      />
+      <div className={cn(
+        'relative w-full h-full aspect-square rounded-lg border-2 group-hover:border-6 group-hover:border-selected', 
+        disableCharacter ? "opacity-50 " : ""
+        )}>
+
+        <img
+          src={`https://ddragon.leagueoflegends.com/cdn/${version}/img/champion/${character.id}.png`}
+          className="max-w-full max-h-full rounded-md"
+          width={150}
+          height={150}
+          alt={character.name}
+          loading={'lazy'}
+        />
+        <div
+          className={cn("absolute inset-0",
+           characterInRed ? "bg-red-400 text-red-400" : 
+           characterInBlue ? "bg-blue-400 text-blue-400" : "",
+           disableCharacter ? " rounded-lg opacity-30" : ""
+          )}
+        />
+      </div>
+
       <p
-        className={`whitespace-nowrap ${disableCharacter ? "opacity-50 " : ""}`}
+        className={`whitespace-nowrap text-pretty lg:text-nowrap text-xs min-[500px]:text-sm md:text-base ${disableCharacter ? "opacity-50 " : ""}`}
       >
         {character.name}
       </p>

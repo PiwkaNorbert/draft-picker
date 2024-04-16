@@ -5,7 +5,7 @@ import { getLatestVersion } from "./fetch";
 
 export async function getAvgChampion(patch: string, signal?: AbortSignal) {
   const { data, status } = await axios.get(
-    `http://54.37.235.22:8000/champions-avg/?patch=${patch}`,
+    `https://ourcraft.pl/champions-avg/?patch=${patch}`,
     {
       signal,
     }

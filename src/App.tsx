@@ -31,7 +31,7 @@ export default function App() {
 
   // Send the draft to the backend
   const sendDraftMutation = useMutation((draft: DraftObject) => {
-    return axios.post(`http://54.37.235.22:8000/game-avg/?patch=${patch}`, draft);
+    return axios.post(`https://ourcraft.pl/game-avg/?patch=${patch}`, draft);
   });
   const { mutate: updateGameAvg } = sendDraftMutation;
 
@@ -161,7 +161,7 @@ export default function App() {
             handleRightClick={handleRightClick}
             />
         </Suspense>
-        <section className="flex pt-10 gap-4 justify-between">
+        <section className="flex pt-10 lg:gap-4 justify-between">
           <TeamMembers
             version={championData.version}
             handleRightClick={handleRightClick}
@@ -172,7 +172,7 @@ export default function App() {
               </Suspense>
 
               <div className=" overflow-y-scroll overflow-x-clip  mx-auto w-full flex-grow basis-0 h-[544px] px-[18px]">
-                <div className="grid grid-cols-3 md:grid-cols-4 w-full lg:grid-cols-6 gap-4 items-center justify-center ">
+                <div className="grid grid-cols-2 sm:grid-cols-4 md:grid-cols-5 w-full min-[1100px]:grid-cols-6 gap-4 items-start lg:items-center justify-center ">
                   <Suspense fallback={<div className="col-span-full w-full">Loading...</div>}>
 
                     {isEmpty ? (

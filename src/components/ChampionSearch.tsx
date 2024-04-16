@@ -64,9 +64,9 @@ const championFilterByTags = searchParams.get('tag')?.split(',') || []
 
 
   return (
-    <div className="flex flex-col lg:flex-row items-center justify-center mb-10 gap-2 px-[18px] max-w-[613px] mx-auto">
+    <div className="flex flex-col lg:flex-row lg:items-center lg:justify-center mb-5 lg:mb-10 gap-2 px-[18px] w-full max-w-full lg:max-w-[613px] mx-auto">
    
-   <div role="search" className="relative grid justify-self-center text-[#aaa]">
+   <div role="search" className="relative grid text-[#aaa]">
       <svg
         className="absolute bottom-0 left-3 top-0 h-full items-center "
         xmlns="http://www.w3.org/2000/svg"
@@ -81,7 +81,7 @@ const championFilterByTags = searchParams.get('tag')?.split(',') || []
         Search
       </label>
       <input
-        className="prose-base block h-full w-full rounded-md border-0 border-border bg-card py-2 pl-10 pr-3.5 text-text-1 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-text-1 sm:leading-6 lg:w-64"
+        className="prose-base block h-full w-full rounded-md border-0 border-border bg-card py-2 pl-10 pr-3.5 text-text-1 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-text-1 sm:leading-6 lg:w-40"
         type="text"
         id="search"
         aria-label="Search "
@@ -93,7 +93,7 @@ const championFilterByTags = searchParams.get('tag')?.split(',') || []
         autoFocus
       />
     </div>
-     <section className="flex gap-2 flex-1 justify-end">
+     <section className="flex gap-4 lg:gap-2 flex-1 flex-wrap lg:flex-nowrap justify-center lg:justify-end">
      {buttonTags.map((tag, index) => (
        <button
          key={index}

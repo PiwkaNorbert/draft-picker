@@ -102,7 +102,7 @@ const NestedPie: FC<{ teamAvg: TeamAvg | null, selectedStat: string, title: stri
   return (
 
     <div className={cn(
-      "col-span-2 grid place-items-center p-4",
+      "lg:col-span-2 grid place-items-center p-4",
       className
     )}>
       <h2 className=" font-semibold text-sm text-gray-500">{title}</h2>

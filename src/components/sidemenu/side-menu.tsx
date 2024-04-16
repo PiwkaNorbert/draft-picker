@@ -2,6 +2,7 @@
 import { NavLink } from 'react-router-dom'
 import { VersionMenu } from './VersionMenu'
 import { Suspense, useEffect, useState } from 'react'
+import { useDebouncedCallback } from 'use-debounce'
 
 const links = [
   { name: 'Home', path: '/', iconPath: <path d="M224,120v96a8,8,0,0,1-8,8H160a8,8,0,0,1-8-8V164a4,4,0,0,0-4-4H108a4,4,0,0,0-4,4v52a8,8,0,0,1-8,8H40a8,8,0,0,1-8-8V120a16,16,0,0,1,4.69-11.31l80-80a16,16,0,0,1,22.62,0l80,80A16,16,0,0,1,224,120Z"></path> },
@@ -14,6 +15,33 @@ const SideMenu = () => {
     return saved !== null ? JSON.parse(saved) : false;
   });
   const [width, setWidth] = useState<number>(minimized ? 0 : 260);
+
+  
+  // ...
+  
+  const [isLargeScreen, setIsLargeScreen] = useState(window.innerWidth >= 1024);
+  
+  const handleResize = useDebouncedCallback(() => {
+    
+    setIsLargeScreen(window.innerWidth >= 1024);
+  }, 30); 
+
+  useEffect(() => {
+    window.addEventListener('resize', handleResize);
+  
+    // Clean up the event listener when the component is unmounted
+    return () => {
+      window.removeEventListener('resize', handleResize);
+      handleResize.cancel(); // Cancel any pending debounced function
+    };
+  }, [handleResize]);
+  
+  const asideStyle: React.CSSProperties = isLargeScreen ? {
+    width: `${width.toFixed(4)}px`, // Update the width of the aside
+    visibility: width > 0 ? 'visible' : 'hidden', // Hide the aside when width is 0
+  } : {};
+  
+  // ...
 
   useEffect(() => {
     localStorage.setItem('minimized', JSON.stringify(minimized));
@@ -49,15 +77,11 @@ const SideMenu = () => {
     setMinimized((prevMinimized) => !prevMinimized);
   }
   
-  const asideStyle: React.CSSProperties = {
-    width: `${width.toFixed(4)}px`, // Update the width of the aside
-    visibility: width > 0 ? 'visible' : 'hidden', // Hide the aside when width is 0
-  };
-
+  
   return (
     <>
       <button
-        className="fixed left-0 top-1/2 z-40 bg-transparent "
+        className="hidden lg:block fixed left-0 top-1/2 z-40 bg-transparent "
         onClick={toggleMinimize}
         style={{
           transform: `translateX(${width.toFixed(4)}px) translateY(-50%) translateZ(0) rotate(${width > 0 ? 180 : 0}deg)`,
@@ -68,14 +92,14 @@ const SideMenu = () => {
       </Suspense>
       </button>
       <aside
-        className="sticky top-0 h-screen min-h-screen flex-shrink-0 overflow-x-hidden bg-[#303033] text-slate-300 "
+        className=" lg:h-screen lg:min-h-screen  overflow-x-hidden bg-[#303033] text-slate-300 "
         style={asideStyle}
       >
-        <div className="flex h-full w-[260px] flex-col overflow-x-hidden p-8">
-          <h1>LoL Drafter</h1>
+        <div className="flex w-full h-full lg:place-items-center justify-between gap-2 lg:gap-0 lg:w-[260px] flex-row lg:flex-col overflow-x-hidden px-4 py-2 lg:p-8">
+          <h1 className='text-2xl'>LoL Drafter</h1>
           {/* <LoginButton /> */}
           <nav>
-            <ul className="grid">
+            <ul className="grid lg:grid-cols-1 grid-cols-2">
               {links.map((link, index) => (
                 <li key={index} className="hover:underline">
                   <NavLink

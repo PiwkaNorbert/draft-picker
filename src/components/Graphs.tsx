@@ -48,14 +48,14 @@ const Graphs: FC = () => {
           <CarouselContent>
           {groupedStatOptions.map((group, groupIdx) => (
             <CarouselItem key={groupIdx} className=" p-2 py-9 wrap max-w-full cursor-pointer hover:bg-opacity-90">
-              <div className="grid grid-cols-6 gap-4 px-4 place-items-center">
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-6 gap-4 px-4 place-items-center">
 
               {groupIdx === selectedIdx && group.stats.map((stat, idx) => {
                 const gridClasses = {
                   default: '',
-                  lastInRowOfThree: 'col-start-3',
-                  fourthInRowOfFive: 'col-start-2',
-                  fifthInRowOfFive: 'col-start-4',
+                  lastInRowOfThree: 'lg:col-start-3',
+                  fourthInRowOfFive: 'lg:col-start-2',
+                  fifthInRowOfFive: 'lg:col-start-4',
                 };
               
                 let gridClass = gridClasses.default;

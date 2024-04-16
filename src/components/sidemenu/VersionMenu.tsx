@@ -25,7 +25,7 @@ export const VersionMenu = () => {
         setPatch(e);
       }}
     >
-      <SelectTrigger className="mt-auto w-full bg-[#252528] min-w-0">
+      <SelectTrigger className="lg:mt-auto w-max lg:w-full bg-[#252528] min-w-0 ">
         <SelectValue placeholder="Patch" />
       </SelectTrigger>
       <SelectContent>

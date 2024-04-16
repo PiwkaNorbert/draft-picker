@@ -8,7 +8,7 @@ const TeamBans = ({ version, handleRightClick }: TeamBansProps) => {
   const { blueBans, redBans} = useDraft()
 
   return (
-    <div className="w-full flex justify-between gap-2 mx-auto">
+    <div className="w-full flex flex-col lg:flex-row justify-between gap-2 mx-auto">
       <div className={`team `}>
         <h2>Team 1</h2>
         <div className="banned-picks">
