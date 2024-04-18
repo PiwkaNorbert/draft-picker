@@ -6,8 +6,15 @@ export const tags = [
   "Marksman",
   "Support",
 ];
+export interface StatOption {
+  name: string;
+  stats: {
+    value: string;
+    name: string;
+  }[];
+}
 
-export const groupedStatOptions = [
+export const groupedStatOptions: StatOption[]  = [
   {
     name: "Damage Dealt - Type",
     stats: [
@@ -21,7 +28,6 @@ export const groupedStatOptions = [
   {
     name: "Damage Dealt - Target",
     stats: [
-      {value: "damageDealtToTurrets", name: "Damage Dealt To Turrets"},
       {value: "damageDealtToBuildings", name: "Damage Dealt To Buildings"},
       {value: "damageDealtToObjectives", name: "Damage Dealt To Objectives"},
     ]
