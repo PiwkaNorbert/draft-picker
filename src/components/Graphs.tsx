@@ -11,13 +11,11 @@ import {
   CarouselNext,
   CarouselPrevious,
 } from "../../src/components/ui/carousel";
-import { useDraft } from '../Utils/hooks/useDraft';
 import { groupedStatOptions } from "../constants";
 
 
 const Graphs: FC = () => {
 
-  const { teamAvg } = useDraft();
   const [api, setApi] = useState<CarouselApi>()
   const [title, setTitle] = useState(groupedStatOptions[0].name); // Add this line
   const [selectedIdx, setSelectedIdx] = useState(0); // Add this line
@@ -47,7 +45,7 @@ const Graphs: FC = () => {
           className="max-w-screen-xl place-self-center h-full">
           <CarouselContent>
           {groupedStatOptions.map((group, groupIdx) => (
-            <CarouselItem key={groupIdx} className=" p-2 py-9 wrap max-w-full cursor-pointer hover:bg-opacity-90">
+            <CarouselItem key={groupIdx} className=" p-2 py-9 wrap max-w-full h-full cursor-pointer hover:bg-opacity-90">
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-6 gap-4 px-4 place-items-center">
 
               {groupIdx === selectedIdx && group.stats.map((stat, idx) => {
@@ -73,7 +71,7 @@ const Graphs: FC = () => {
 
 
                 return (
-                  <NestedPie key={idx} className={gridClass} teamAvg={teamAvg} selectedStat={stat.value} title={stat.name} />
+                  <NestedPie key={idx} className={gridClass} selectedStat={stat.value} title={stat.name} />
                 );
               })}
                 </div>

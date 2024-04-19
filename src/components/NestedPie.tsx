@@ -1,17 +1,19 @@
 import "@toast-ui/chart/dist/toastui-chart.min.css";
 import { useMemo, useCallback, FC } from "react";
-import { TeamAvg } from "../types/util";
 import { cn } from "../lib/utils";
 import { PieChart } from '@mui/x-charts/PieChart';
 import { Player } from "../types/graphs";
+import { useDraft } from "../Utils/hooks/useDraft";
 interface ChartData {
   label: string;
   value: number;
   color: string;
 }
 
-const NestedPie: FC<{ teamAvg: TeamAvg | null, selectedStat: string, title: string, className: string }> = ({ teamAvg, selectedStat, title, className }) => {
-  
+const NestedPie: FC<{ selectedStat: string, title: string, className: string }> = ({  selectedStat, title, className }) => {
+
+  const { teamAvg } = useDraft();
+
   
   const colors = useMemo(() => {
     const redColors = ["#ef4444","#f06565","#f38585","#f5a8a8", "#fec8c8"];
@@ -69,13 +71,13 @@ const NestedPie: FC<{ teamAvg: TeamAvg | null, selectedStat: string, title: stri
           for (let i = 0; i < 5; i++) {
 
             const player = teamAvg[team][i];
-            const champName = (player as unknown as Player)?.championName;
+            const championDisplayName = (player as unknown as Player)?.displayName;
             
             if (player) {
               const damageAvg = getDamageAvg(team, i);
               if (damageAvg !== undefined && damageAvg !== 0) {
                 result.push({
-                  label: champName ?? '',
+                  label: championDisplayName ?? '',
                   value: damageAvg,
                   color: colorMapping[team][i],
                 });

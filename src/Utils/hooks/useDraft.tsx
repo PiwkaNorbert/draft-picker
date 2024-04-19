@@ -1,7 +1,6 @@
 import { useContext } from 'react';
 import { DraftContext } from '../providers/DraftProvider';
 
-
 export const useDraft = () => {
   const context = useContext(DraftContext);
   if (!context) {

@@ -1,6 +1,7 @@
 export interface Player {
     id: number
     championName: string
+    displayName: string
     win_ratio: string
     sample_size: number
     damageDealtToBuildings: number

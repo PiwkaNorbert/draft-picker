@@ -41,8 +41,7 @@ import {
     TooltipProvider,
     TooltipTrigger,
   } from "../ui/tooltip"
-  
-
+import { useComparisonList } from "../../Utils/hooks/useComparionList"
 
 export function DataTableDemo({data, latestVersion, selectedIdx}: {data: ChampionListData[], latestVersion: string, selectedIdx: number}) {
     const [sorting, setSorting] = React.useState<SortingState>([])
@@ -52,6 +51,7 @@ export function DataTableDemo({data, latestVersion, selectedIdx}: {data: Champio
     const [columnVisibility, setColumnVisibility] =
     React.useState<VisibilityState>({})
     const [rowSelection, setRowSelection] = React.useState({})
+    const { dispatch } = useComparisonList();
     
 
     const columns: ColumnDef<ChampionListData>[] = [
@@ -64,18 +64,38 @@ export function DataTableDemo({data, latestVersion, selectedIdx}: {data: Champio
     },
     {
         accessorKey: "championName",
-        header: "Name",
-        cell: ({row}) => (
+        header: ({ column }) => {
+          return (
+            <Button
+              variant="ghost"
+              onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+            >
+              Name
+              <ArrowUpDown className="ml-2 h-4 w-4" />
+            </Button>
+          )
+        },
+        cell: ({row}) => {
+          
+          
+          return (
             <div className="flex gap-2 items-center min-w-max relative">
                 <img 
                     src={`http://ddragon.leagueoflegends.com/cdn/${latestVersion}/img/champion/${row.getValue("championName")}.png`} 
                     alt={row.getValue("championName")} 
                     className="size-14"
                     loading="lazy"
+                    onError={(e) => {
+                      const target = e.target as HTMLImageElement
+                      target.onerror = null
+                      target.src = '/no_champion.png'
+                      return
+                    }}
                 />
-                {row.getValue("championName")}
+                {row.original.displayName}
+                
             </div>
-            )
+            )}
     },
     {
         accessorKey: "win_ratio",
@@ -118,6 +138,24 @@ export function DataTableDemo({data, latestVersion, selectedIdx}: {data: Champio
         },
         cell: ({row}: any) => <div> {row.getValue(stat.value)}</div>,
     })) || []),
+      // add a column that has a button in the cell to add the champion to a comparison list
+      {
+        id: "compare",
+        header: "Compare",
+        cell: ({ row }) =>   {
+          return (
+            <Button
+              variant="outline"
+              className="h-10"
+              onClick={() => dispatch({ type: 'ADD_CHAMPION', payload: row.original })}
+            >
+              Compare
+            </Button>
+          )
+        },
+        enableSorting: false,
+        enableHiding: false,
+      },
     ];
         
 
@@ -139,6 +177,7 @@ export function DataTableDemo({data, latestVersion, selectedIdx}: {data: Champio
       rowSelection,
     },
   })
+  
 
   return (
     <div className="w-full">
@@ -151,24 +190,7 @@ export function DataTableDemo({data, latestVersion, selectedIdx}: {data: Champio
           }
           className="max-w-sm"
         />
-         <div className="space-x-2 ml-auto h-full">
-          <Button
-            variant="outline"
-            className="h-10"
-            onClick={() => table.previousPage()}
-            disabled={!table.getCanPreviousPage()}
-          >
-            Previous
-          </Button>
-          <Button
-            variant="outline"
-            className="h-10"
-            onClick={() => table.nextPage()}
-            disabled={!table.getCanNextPage()}
-          >
-            Next
-          </Button>
-        </div>
+         
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <Button variant="outline" className="ml-auto">
@@ -247,13 +269,35 @@ export function DataTableDemo({data, latestVersion, selectedIdx}: {data: Champio
           </TableBody>
         </Table>
       </div>
-      <div className="flex items-center justify-end space-x-2 py-4">
-        <div className="flex-1 text-sm text-muted-foreground">
-          {table.getFilteredSelectedRowModel().rows.length} of{" "}
-          {table.getFilteredRowModel().rows.length} row(s) selected.
+      <section className="flex gap-4 items-center mt-4">
+      <span className="flex justify-end ml-auto gap-1 text-sm">
+          <div>Page</div>
+          <strong>
+            {table.getState().pagination.pageIndex + 1} of{' '}
+            {table.getPageCount()}
+          </strong>
+        </span>
+        <div className="space-x-2  h-full">
+          <Button
+            variant="outline"
+            className="h-10"
+            onClick={() => table.previousPage()}
+            disabled={!table.getCanPreviousPage()}
+          >
+            Previous
+          </Button>
+          <Button
+            variant="outline"
+            className="h-10"
+            onClick={() => table.nextPage()}
+            disabled={!table.getCanNextPage()}
+          >
+            Next
+          </Button>
         </div>
-       
-      </div>
+    
+      </section>
+
     </div>
   )
 }

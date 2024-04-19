@@ -10,7 +10,7 @@ export type Player = {
 
 
 interface Stats {
-    [selectedStat: string]: number | undefined;
+    [selectedStat: string]: number | string;
   }
   
 export interface DraftObject {

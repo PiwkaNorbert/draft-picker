@@ -17,7 +17,7 @@ export const TeamMembers = ({
 
   return (
     <>
-      <div className={` flex flex-col gap-y-2  [&>*:nth-child(3)]:mb-8 `}>
+      <div className={` flex flex-col gap-y-2 justify-between lg:justify-normal  [&>*:nth-child(3)]:mb-8 `}>
         {bluePicks.map((champion: string | null, index: number) => (
           <div
             key={index}
@@ -35,7 +35,7 @@ export const TeamMembers = ({
 
       {children}
 
-      <div className={`  flex flex-col gap-y-2  [&>*:nth-child(3)]:mb-8`}>
+      <div className={`  flex flex-col gap-y-2 justify-between lg:justify-normal [&>*:nth-child(3)]:mb-8`}>
         {redPicks.map((champion: string | null, index: number) => {
           
           return (

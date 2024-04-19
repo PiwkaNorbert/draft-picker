@@ -1,19 +1,19 @@
 import { Suspense, lazy, useEffect, useRef } from "react";
-import "./App.css";
-import { TeamMembers } from "./components/TeamMembers";
-import useChampionQuery from "./API/useChampionQuery";
-import { Root, Champion } from "./types/data";
-import { useDraft } from './Utils/hooks/useDraft';
+import { TeamMembers } from "../components/TeamMembers";
+import useChampionQuery from "../API/useChampionQuery";
+import { Root, Champion } from "../types/data";
+import { useDraft } from '../Utils/hooks/useDraft';
 import { useSearchParams } from "react-router-dom";
 import { useMutation } from "@tanstack/react-query";
-import { DraftObject } from "./types/util";
-import { usePatch } from './Utils/hooks/usePatch';
+import { DraftObject } from "../types/util";
+import { usePatch } from '../Utils/hooks/usePatch';
 import axios from "axios";
+import '../App.css'
 
-const CharacterCard = lazy(() => import("./components/CharacterCard"));
-const Graphs = lazy(() => import("./components/Graphs"));
-const TeamBans = lazy(() => import("./components/TeamBans"));
-const ChampionSearch = lazy(() => import("./components/ChampionSearch"));
+const CharacterCard = lazy(() => import("../components/CharacterCard"));
+const Graphs = lazy(() => import("../components/Graphs"));
+const TeamBans = lazy(() => import("../components/TeamBans"));
+const ChampionSearch = lazy(() => import("../components/ChampionSearch"));
 
 
 export default function App() {
@@ -137,6 +137,7 @@ export default function App() {
   
   const championData = useChampionData.data as Root;
   
+  
   // Map the champions to an array
   for (const championName in championData.data) {
     // Check if the championName is a property of the championData object
@@ -152,7 +153,7 @@ export default function App() {
   return (
     <>
 
-      <section className="snap-start h-screen mx-auto">
+      <section className="snap-start min-h-screen mx-auto">
 
         <Suspense fallback={<div className="w-full flex justify-between gap-2 mx-auto">Loading...</div>}>
 
@@ -198,7 +199,7 @@ export default function App() {
         </section>
       </section>
 
-      <section className=" h-screen snap-start p-10 px-20 bg-white flex flex-col" ref={graphsRef}>
+      <section className=" min-h-screen snap-start p-10 px-20 bg-white flex flex-col" ref={graphsRef}>
         <Suspense fallback={<div>Loading...</div>}>
           <Graphs />
         </Suspense>
