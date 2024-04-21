@@ -104,7 +104,7 @@ const SideMenu = () => {
           <nav>
             <ul className="grid lg:grid-cols-1 grid-cols-2">
               {links.map((link, index) => (
-                <li key={index} className="hover:underline">
+                <li key={index} className="  px-4 py-2 mt-2 text-lg font-semibold text-white bg-transparent rounded transition duration-150 ease-in-out transform hover:translate-x-2 focus:translate-x-2 border-white border-r-0 focus:outline-none">
                   <NavLink
                     to={link.path}
                     rel="noreferrer noopener"
