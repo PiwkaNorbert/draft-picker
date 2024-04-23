@@ -1,8 +1,16 @@
 import React, { Suspense, lazy } from "react"
+import FetchingIndicator from "../components/FetchingIndicator"
+import { ChampionBox } from "../components/ChampionBox"
+
 const SideMenu = lazy(() => import("../components/sidemenu/side-menu"))
 
 const MainLayout = ({children}: { children: React.ReactNode}) => {
+
+
   return (
+    <>
+    {/* processs bar */}
+    <FetchingIndicator />
     <div className="App relative flex lg:flex-row flex-col min-h-screen bg-[#303033]">
       <Suspense fallback={
               <aside
@@ -17,7 +25,12 @@ const MainLayout = ({children}: { children: React.ReactNode}) => {
       <div className="relative flex h-full max-w-full bg-[#dbdbdb] flex-1 gap-8 lg:gap-0 flex-col overflow-hidden pl-10 p-4 lg:px-10 lg:py-5">
         {children}
       </div>
+
     </div>
+    <ChampionBox  />
+
+    </>
+
   )
 }
 

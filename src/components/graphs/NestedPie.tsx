@@ -1,9 +1,9 @@
 import "@toast-ui/chart/dist/toastui-chart.min.css";
 import { useMemo, useCallback, FC } from "react";
-import { cn } from "../lib/utils";
+import { cn } from "../../lib/utils";
 import { PieChart } from '@mui/x-charts/PieChart';
-import { Player } from "../types/graphs";
-import { useDraft } from "../Utils/hooks/useDraft";
+import { Player } from "../../types/graphs";
+import { useDraft } from "../../Utils/hooks/useDraft";
 interface ChartData {
   label: string;
   value: number;

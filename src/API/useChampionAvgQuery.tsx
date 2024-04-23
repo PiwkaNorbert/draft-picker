@@ -16,7 +16,7 @@ export async function getAvgChampion(patch: string,  timeLabel: string, signal?:
   return data;
 }
 
-const useChampionAvgQuery = (patch: string, timeLabel: string = "all") => {
+const useChampionAvgQuery = (patch: string = "recent", timeLabel: string = "all") => {
 
   const { data: version } = useQuery(["latestPatch"], ({ signal }) => getLatestVersion(signal), { enabled: !!patch });
   const latestVersion = version?.[0];

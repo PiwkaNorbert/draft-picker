@@ -1,15 +1,18 @@
 import { useComparisonList } from "../Utils/hooks/useComparionList";
+import RadarGraph from "../components/graphs/Radar";
 
 const Compare = () => {
   const { state } = useComparisonList();
-  
- 
 
   return (
     <div>
       wazzup madafaka
-      <div className="flex gap-4">
+      <div className="flex gap-4 flex-col">
+      <section className="max-w-screen-lg">
 
+        <RadarGraph  />
+      </section> 
+      <div className="flex gap-4 ">
       {state?.map((champion) => (
         <div key={champion.id}>
           <h1>{champion.championName}</h1>
@@ -47,6 +50,8 @@ const Compare = () => {
 
         </div>
       ))}
+      </div>
+      
       </div>
       
     </div>

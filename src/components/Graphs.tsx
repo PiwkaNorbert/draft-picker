@@ -1,5 +1,5 @@
 import "@toast-ui/chart/dist/toastui-chart.min.css";
-import NestedPie from "./NestedPie";
+import NestedPie from "./graphs/NestedPie";
 import { FC, useEffect, useState } from "react";
 
 

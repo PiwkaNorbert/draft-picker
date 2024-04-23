@@ -12,7 +12,7 @@ const timeRanges = [
     'all',
     '15-25',
     '25-35',
-    '35+',
+    '>35',
 ]
 
 export const LabelSelection = () => {

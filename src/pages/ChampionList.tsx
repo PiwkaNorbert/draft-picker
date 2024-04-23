@@ -4,8 +4,7 @@ import { useState } from "react"
 import { groupedStatOptions } from "../constants"
 import { Button } from "../components/ui/button"
 import { DataTableDemo } from "../components/ui/data-table"
-import { useComparisonList } from "../Utils/hooks/useComparionList"
-import { ChampionListData } from "../types/chamption-list"
+import { ChampionBox } from "../components/ChampionBox"
 
 const ChamptionList = () => {
 
@@ -51,11 +50,6 @@ return (
       <Button onClick={handleNext}>Next</Button>
     </section>
     <DataTableDemo data={data} selectedIdx={selectedIdx} latestVersion={latestVersion} />
-
-
-    <ChampionBox latestVersion={latestVersion} />
-
-
   </>
 
 );
@@ -65,26 +59,3 @@ export default ChamptionList
 
 
 
-const ChampionBox = ({latestVersion}: {latestVersion: any}) => {
-  const { state, dispatch } = useComparisonList();
-
-
-  const removeChampion = (champion: ChampionListData) => {
-    const championId = champion.id;
-    dispatch({ type: 'REMOVE_CHAMPION', payload: { id: championId } });
-  };
-console.log(state);
-
-  return (
-    <div className="flex fixed bottom-5 right-5 gap-2 ">
-      {state.length > 0 && state.map((champion, index) => (
-        <div key={index} className="relative size-20">
-          <img src={`https://ddragon.leagueoflegends.com/cdn/${latestVersion}/img/champion/${champion.championName}.png`} alt={champion.championName} />
-          <button className="absolute -top-5 -right-5 bg-red-500" onClick={() => removeChampion(champion)}>
-            close
-          </button>
-        </div>
-      ))}
-    </div>
-  );
-};

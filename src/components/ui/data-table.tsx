@@ -41,6 +41,17 @@ import {
     TooltipProvider,
     TooltipTrigger,
   } from "../ui/tooltip"
+
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue
+} from '../ui/select';
+
+
+
 import { useComparisonList } from "../../Utils/hooks/useComparionList"
 
 export function DataTableDemo({data, latestVersion, selectedIdx}: {data: ChampionListData[], latestVersion: string, selectedIdx: number}) {
@@ -51,16 +62,16 @@ export function DataTableDemo({data, latestVersion, selectedIdx}: {data: Champio
     const [columnVisibility, setColumnVisibility] =
     React.useState<VisibilityState>({})
     const [rowSelection, setRowSelection] = React.useState({})
-    const { dispatch } = useComparisonList();
+    const { state, dispatch } = useComparisonList();
     
 
     const columns: ColumnDef<ChampionListData>[] = [
     {
         id: "#",
         header: "#",
-        cell: ({row}) => <div>{+row.id + 1}</div>,
-        enableSorting: true,
-        enableHiding: true,
+        cell: ({row}) => <div>{row.id}</div>,
+        enableSorting: false,
+        enableHiding: false,
     },
     {
         accessorKey: "championName",
@@ -100,8 +111,6 @@ export function DataTableDemo({data, latestVersion, selectedIdx}: {data: Champio
     },
     {
         accessorKey: "win_ratio",
-        enableSorting: true,
-
         header: ({ column }) => {
             return (
               <Button
@@ -128,8 +137,6 @@ export function DataTableDemo({data, latestVersion, selectedIdx}: {data: Champio
     },
     ...(groupedStatOptions[selectedIdx]?.stats?.map((stat) => ({
         accessorKey: stat.value,
-        enableSorting: true,
-
         header: ({ column }: any) => {
             return (
               <Button
@@ -153,6 +160,7 @@ export function DataTableDemo({data, latestVersion, selectedIdx}: {data: Champio
               variant="outline"
               className="h-10"
               onClick={() => dispatch({ type: 'ADD_CHAMPION', payload: row.original })}
+              disabled={state.some((champion) => champion.id === row.original.id) || state.length >= 5}
             >
               Compare
             </Button>
@@ -186,7 +194,7 @@ export function DataTableDemo({data, latestVersion, selectedIdx}: {data: Champio
 
   return (
     <div className="w-full">
-      <div className="flex items-center py-4">
+      <div className="flex items-center py-4 gap-2">
         <Input
           placeholder="Filter champions..."
           value={(table.getColumn("championName")?.getFilterValue() as string) ?? ""}
@@ -195,9 +203,30 @@ export function DataTableDemo({data, latestVersion, selectedIdx}: {data: Champio
           }
           className="max-w-sm"
         />
+
+    <Select
+      onValueChange={(e) => {
+        table.setPageSize(Number(e))
+      }}
+    >
+      <SelectTrigger className="bg-background smin-w-0 w-max h-10 ">
+        <SelectValue placeholder={table.getState().pagination.pageSize} />
+      </SelectTrigger>
+      <SelectContent>
+        {[10, 25, 50, 100, data?.length].map((pageSize) => (
+            <SelectItem key={pageSize}
+              value={pageSize.toString()}
+            >
+             {pageSize}
+            </SelectItem>
+          ))
+        }
+      </SelectContent>
+    </Select>
+
          
         <DropdownMenu>
-          <DropdownMenuTrigger asChild>
+          <DropdownMenuTrigger asChild className="h-10" >
             <Button variant="outline" className="ml-auto">
               Columns <ChevronDown className="ml-2 h-4 w-4" />
             </Button>
@@ -275,6 +304,8 @@ export function DataTableDemo({data, latestVersion, selectedIdx}: {data: Champio
         </Table>
       </div>
       <section className="flex gap-4 items-center mt-4">
+
+      
       <span className="flex justify-end ml-auto gap-1 text-sm">
           <div>Page</div>
           <strong>
