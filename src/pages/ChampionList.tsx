@@ -9,14 +9,10 @@ import { ChampionListData } from "../types/chamption-list"
 
 const ChamptionList = () => {
 
-  const { patch } = usePatch()
-  const { useChampionAvgData, latestVersion } = useChampionAvgQuery(patch);
+  const { patch, dataLabel } = usePatch()
+  const { useChampionAvgData, latestVersion } = useChampionAvgQuery(patch, dataLabel);
   const { data, isLoading, isError } = useChampionAvgData;
   const [selectedIdx, setSelectedIdx] = useState(0); // Add this line
-
-
-
-
 
   const handleNext = () => {
     if (selectedIdx < groupedStatOptions.length - 1) {
