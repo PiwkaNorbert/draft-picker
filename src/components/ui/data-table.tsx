@@ -117,7 +117,7 @@ export function DataTableDemo({data, latestVersion, selectedIdx}: {data: Champio
              <TooltipProvider>
                 <Tooltip>
                     <TooltipTrigger>
-            {row.getValue("win_ratio")} %
+                      {row.getValue("win_ratio")} {row.original.win_ratio && "%"} 
                     </TooltipTrigger>
                     <TooltipContent>
                         <p className="text-sm">{row.original.sample_size} Games</p>
