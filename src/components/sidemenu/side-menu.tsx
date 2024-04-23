@@ -3,6 +3,7 @@ import { NavLink } from 'react-router-dom'
 import { VersionMenu } from './VersionMenu'
 import { Suspense, useEffect, useState } from 'react'
 import { useDebouncedCallback } from 'use-debounce'
+import { LabelSelection } from './LabelSelection'
 
 const links = [
   { name: 'Home', path: '/', iconPath: <path d="M224,120v96a8,8,0,0,1-8,8H160a8,8,0,0,1-8-8V164a4,4,0,0,0-4-4H108a4,4,0,0,0-4,4v52a8,8,0,0,1-8,8H40a8,8,0,0,1-8-8V120a16,16,0,0,1,4.69-11.31l80-80a16,16,0,0,1,22.62,0l80,80A16,16,0,0,1,224,120Z"></path> },
@@ -98,8 +99,8 @@ const SideMenu = () => {
         className=" lg:h-screen lg:min-h-screen lg:sticky lg:top-0 overflow-x-hidden bg-[#303033] text-slate-300 "
         style={asideStyle}
       >
-        <div className="flex w-full h-full lg:place-items-center justify-between gap-2 lg:gap-0 lg:w-[260px] flex-row lg:flex-col overflow-x-hidden px-4 py-2 lg:p-8">
-          <h1 className='text-2xl'>LoL Drafter</h1>
+        <div className="flex w-full h-full justify-between gap-4 lg:w-[260px] flex-row lg:flex-col overflow-x-hidden px-4 py-2 lg:p-8">
+          <h1 className='text-2xl text-left'>LoL Drafter</h1>
           {/* <LoginButton /> */}
           <nav>
             <ul className="grid lg:grid-cols-1 grid-cols-2">
@@ -139,7 +140,11 @@ const SideMenu = () => {
             </ul>
           </nav>
           {/* select with versions */}
-          <VersionMenu />
+          <section className='mt-auto flex flex-col gap-y-4 lg:mt-auto w-max lg:w-full'>
+
+            <LabelSelection />
+            <VersionMenu />
+          </section>
         </div>
       </aside>
     </>

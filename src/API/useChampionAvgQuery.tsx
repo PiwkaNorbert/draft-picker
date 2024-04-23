@@ -3,9 +3,9 @@ import axios from "axios";
 import { ChampionListData } from "../types/chamption-list";
 import { getLatestVersion } from "./fetch";
 
-export async function getAvgChampion(patch: string, signal?: AbortSignal) {
+export async function getAvgChampion(patch: string,  timeLabel: string, signal?: AbortSignal) {
   const { data, status } = await axios.get(
-    `https://ourcraft.pl/champions-avg/?patch=${patch}`,
+    `https://ourcraft.pl/champions-avg/?patch=${patch}&time_label=${timeLabel}`,
     {
       signal,
     }
@@ -16,14 +16,14 @@ export async function getAvgChampion(patch: string, signal?: AbortSignal) {
   return data;
 }
 
-const useChampionAvgQuery = (patch: string) => {
+const useChampionAvgQuery = (patch: string, timeLabel: string = "all") => {
 
   const { data: version } = useQuery(["latestPatch"], ({ signal }) => getLatestVersion(signal), { enabled: !!patch });
   const latestVersion = version?.[0];
 
 
 
-  const useChampionAvgData = useQuery<ChampionListData[]>(["champions-avg", patch], ({ signal }) => getAvgChampion(patch, signal), {
+  const useChampionAvgData = useQuery<ChampionListData[]>(["champions-avg", patch], ({ signal }) => getAvgChampion(patch, timeLabel, signal), {
     enabled: !!latestVersion,
     placeholderData: placeholderData
   });

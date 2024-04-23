@@ -59,11 +59,12 @@ export function DataTableDemo({data, latestVersion, selectedIdx}: {data: Champio
         id: "#",
         header: "#",
         cell: ({row}) => <div>{+row.id + 1}</div>,
-        enableSorting: false,
-        enableHiding: false,
+        enableSorting: true,
+        enableHiding: true,
     },
     {
         accessorKey: "championName",
+
         header: ({ column }) => {
           return (
             <Button
@@ -99,6 +100,8 @@ export function DataTableDemo({data, latestVersion, selectedIdx}: {data: Champio
     },
     {
         accessorKey: "win_ratio",
+        enableSorting: true,
+
         header: ({ column }) => {
             return (
               <Button
@@ -125,6 +128,8 @@ export function DataTableDemo({data, latestVersion, selectedIdx}: {data: Champio
     },
     ...(groupedStatOptions[selectedIdx]?.stats?.map((stat) => ({
         accessorKey: stat.value,
+        enableSorting: true,
+
         header: ({ column }: any) => {
             return (
               <Button
