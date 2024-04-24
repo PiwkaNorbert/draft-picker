@@ -59,13 +59,13 @@ export const groupedStatOptions: StatOption[]  = [
       {value: "totalHeal", name: "Total Heal"},
     ]
   },
-  {
-    name: "Crowd Control",
-    stats: [
-      {value: "timeCCingOthers", name: "Time CCing Others"},
-      {value: "totalTimeCCDealt", name: "Total Time CC Dealt"},
-    ]
-  },
+  // {
+  //   name: "Crowd Control",
+  //   stats: [
+  //     {value: "timeCCingOthers", name: "Time CCing Others"},
+  //     {value: "totalTimeCCDealt", name: "Total Time CC Dealt"},
+  //   ]
+  // },
   {
     name: "Gold n' Farming (to be changed)",
     stats: [
@@ -78,12 +78,14 @@ export const groupedStatOptions: StatOption[]  = [
   },
 
   {
-    name: "Vision",
+    name: "Crowd Control & Vision",
     stats: [
       {value: "wardsPlaced", name: "Wards Placed"},
-      {value: "wardsKilled", name: "Wards Killed"},
-      {value: "visionWardsBoughtInGame", name: "Vision Wards Bought In Game"},
+      // {value: "wardsKilled", name: "Wards Killed"},
+      // {value: "visionWardsBoughtInGame", name: "Vision Wards Bought In Game"},
       {value: "visionScore", name: "Vision Score"},
+      {value: "timeCCingOthers", name: "Time CCing Others"},
+      {value: "totalTimeCCDealt", name: "Total Time CC Dealt"},
     ]
   },
 ];

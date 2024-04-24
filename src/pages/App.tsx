@@ -583,12 +583,12 @@ export default function App() {
       updateGameAvg(draft, {
         onSuccess: (data) => {
           const { data: teamAvg } = data;
-          const blueRecs = teamAvg.blue_recommendation;
-          const sortedBlueRecs = Object.entries(blueRecs).sort((a, b) => Math.floor(b[1]) - Math.floor(a[1]));
-          const sortedBlueRecsJson = Object.fromEntries(sortedBlueRecs);
-          console.log(sortedBlueRecsJson);
+          // for mateusz later
+          // const blueRecs = teamAvg.blue_recommendation;
+          // const sortedBlueRecs = Object.entries(blueRecs).sort((a, b) => Math.floor(b[1]) - Math.floor(a[1]));
+          // const sortedBlueRecsJson = Object.fromEntries(sortedBlueRecs);
+          // console.log(sortedBlueRecsJson);
 
-          
           
           setTeamavg(teamAvg);
         },

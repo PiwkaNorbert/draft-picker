@@ -12,26 +12,30 @@ import {
   CarouselPrevious,
 } from "../../src/components/ui/carousel";
 import { groupedStatOptions } from "../constants";
+import { useGroupedStatOptions } from "../Utils/hooks/useGroupedStatOptions";
 
 
 const Graphs: FC = () => {
 
   const [api, setApi] = useState<CarouselApi>()
-  const [title, setTitle] = useState(groupedStatOptions[0].name); // Add this line
-  const [selectedIdx, setSelectedIdx] = useState(0); // Add this line
+  const { selectedIdx, setSelectedIdx, title} = useGroupedStatOptions()
+  
+
   
   useEffect(() => {
     if (!api) {
       return
     }
+
+    if (api) {
+      api.scrollTo(selectedIdx);
+    }
  
     api.on("select", () => {
       const selectedIdx = api.selectedScrollSnap();
-      const newTitle = groupedStatOptions[selectedIdx].name
-      setTitle(newTitle);
       setSelectedIdx(selectedIdx); // Update the selected index
     })
-  }, [api])
+  }, [api, setSelectedIdx, selectedIdx, title])
   
   return (
     <div className=" py-6 px-12 rounded-2xl flex flex-col gap-y-4 container h-full">

@@ -99,13 +99,13 @@ const SideMenu = () => {
         className=" lg:h-screen lg:min-h-screen lg:sticky lg:top-0 overflow-x-hidden bg-[#303033] text-slate-300 "
         style={asideStyle}
       >
-        <div className="flex w-full h-full justify-between gap-4 lg:w-[260px] flex-row lg:flex-col overflow-x-hidden px-4 py-2 lg:p-8">
+        <div className="flex w-full h-full justify-between lg:items-normal items-center gap-4 lg:w-[260px] flex-row lg:flex-col overflow-x-hidden px-4 py-2 lg:p-8">
           <h1 className=' text-left text-white font-semibold text-3xl '>LoL Drafter</h1>
           {/* <LoginButton /> */}
           <nav>
-            <ul className="grid lg:grid-cols-1 grid-cols-2">
+            <ul className="flex flex-row lg:flex-col ">
               {links.map((link, index) => (
-                <li key={index} className="mt-2 text-lg bg-transparent rounded transition duration-150 ease-in-out transform hover:translate-x-2 focus:translate-x-2 border-white border-r-0 focus:outline-none">
+                <li key={index} className="lg:mt-2 text-lg bg-transparent rounded transition duration-150 ease-in-out transform hover:translate-x-2 focus:translate-x-2 border-white border-r-0 focus:outline-none">
                   <NavLink
                     to={link.path}
                     rel="noreferrer noopener"
@@ -140,7 +140,7 @@ const SideMenu = () => {
             </ul>
           </nav>
           {/* select with versions */}
-          <section className='mt-auto flex flex-col gap-y-4 lg:mt-auto w-max lg:w-full'>
+          <section className='lg:mt-auto flex lg:flex-col flex-row gap-4 w-max lg:w-full'>
 
             <LabelSelection />
             <VersionMenu />

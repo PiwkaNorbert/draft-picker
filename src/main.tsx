@@ -12,6 +12,7 @@ import MainLayout from "./layouts/MainLayout.tsx";
 
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools'
 import { ComparisonListProvider } from "./Utils/providers/ComparisonProvider.tsx";
+import { GroupedStatOptionsProvider } from "./Utils/providers/GroupedStatOptionsProvider.tsx";
 
 
 const Login = lazy(() => import("./pages/auth/discord/Login.tsx"));
@@ -77,14 +78,17 @@ const router = createBrowserRouter([
 ReactDOM.createRoot(document.getElementById("root")!).render(
   <React.StrictMode>
     <QueryClientProvider client={queryClient}>
-      <PatchProvider>
-        <DraftProvider>
-          
-          <ComparisonListProvider>
-            <RouterProvider router={router} />
-          </ComparisonListProvider>
-        </DraftProvider>
-      </PatchProvider>
+      <GroupedStatOptionsProvider>
+        <PatchProvider>
+          <DraftProvider>
+            
+            <ComparisonListProvider>
+              <RouterProvider router={router} />
+            </ComparisonListProvider>
+          </DraftProvider>
+        </PatchProvider>
+      </GroupedStatOptionsProvider>
+
       <ReactQueryDevtools initialIsOpen={false} />
     </QueryClientProvider>
   </React.StrictMode>

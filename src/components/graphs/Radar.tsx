@@ -1,4 +1,5 @@
 
+import { groupedStatOptions } from "../../constants";
 import { useComparisonList } from "../../Utils/hooks/useComparionList";
 import {
     Chart as ChartJS,
@@ -7,12 +8,12 @@ import {
     LineElement,
     Filler,
     Tooltip,
-    Legend,
+    Legend
   } from 'chart.js';
 
-import { ChartData } from 'chart.js';
 
 import { Radar } from 'react-chartjs-2';
+import { useGroupedStatOptions } from "../../Utils/hooks/useGroupedStatOptions";
 
 ChartJS.register(
     RadialLinearScale,
@@ -25,22 +26,34 @@ ChartJS.register(
 
 
 const RadarGraph = () => {
-    const { state } = useComparisonList();
+    const { state: selectedChampions } = useComparisonList();
+    const { selectedIdx } = useGroupedStatOptions();
 
-    const data: ChartData = {
-        labels: ['Win Ratio', 'Sample Size', 'Damage Dealt To Buildings', 'Gold Earned', 'Total Minions Killed'],
-        datasets: state.map((champion, index) => ({
-            label: champion.championName,
-            data: [champion.win_ratio, champion.sample_size, champion.damageDealtToBuildings, champion.goldEarned, champion.totalMinionsKilled],
-            backgroundColor: `rgba(${index * 50}, ${index * 50}, ${index * 50}, 0.2)`,
-            borderColor: `rgba(${index * 50}, ${index * 50}, ${index * 50}, 1)`,
-            borderWidth: 1,
-        }))
+    
+    const selectedOption = groupedStatOptions[selectedIdx];
+    const labels = selectedOption ? selectedOption.stats.map(stat => stat.name) : [];
+    const labelValues = selectedOption ? selectedOption.stats.map(stat => stat.value) : [];
+  
+
+    const data = {
+      labels: labels,
+      datasets: selectedOption ? selectedChampions.map((champion) => ({
+          label: champion.championName,
+          data: labelValues.map(stat => Number(champion[stat])),
+
+          borderWidth: 1,
+          // backgroundColor: `rgba()`
+
+      })) : []
     };
 
+
   return (
-    <Radar data={data} />
+    <div className=" bg-[#f0f0f0] rounded-md p-4 mt-4">
+      <Radar data={data} />
+    </div>
   )
 }
 
 export default RadarGraph
+

@@ -30,6 +30,7 @@ export const LabelSelection = () => {
       <SelectContent>
         {timeRanges.map((label: string) => (
             <SelectItem
+              className='capitalize'
               onChange={() => {
                 console.log(label);
               }}
