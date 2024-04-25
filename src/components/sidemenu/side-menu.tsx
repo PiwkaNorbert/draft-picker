@@ -99,7 +99,7 @@ const SideMenu = () => {
         className=" lg:h-screen lg:min-h-screen lg:sticky lg:top-0 overflow-x-hidden bg-[#303033] text-slate-300 "
         style={asideStyle}
       >
-        <div className="flex w-full h-full justify-between lg:items-normal items-center gap-4 lg:w-[260px] flex-row lg:flex-col overflow-x-hidden px-4 py-2 lg:p-8">
+        <div className="flex w-full h-full justify-between lg:items-start items-center gap-4 lg:w-[260px] flex-row lg:flex-col overflow-x-hidden px-4 py-2 lg:p-8">
           <h1 className=' text-left text-white font-semibold text-3xl '>LoL Drafter</h1>
           {/* <LoginButton /> */}
           <nav>
