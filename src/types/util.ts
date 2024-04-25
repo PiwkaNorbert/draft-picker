@@ -1,6 +1,8 @@
 export type TeamAvg = {
     red_team: Player[];
     blue_team: Player[];
+    blue_recommendation: TeamRecommendations;
+    red_recommendation: TeamRecommendations;
 }
 
 export type Player = {
@@ -8,6 +10,9 @@ export type Player = {
     stats?: Stats;
 }
 
+export interface TeamRecommendations {
+  [champion: string]: number;
+}
 
 interface Stats {
     [selectedStat: string]: number | string;

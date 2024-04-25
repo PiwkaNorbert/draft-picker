@@ -5,9 +5,9 @@ import { Root, Champion } from "../types/data";
 import { useDraft } from '../Utils/hooks/useDraft';
 import { useSearchParams } from "react-router-dom";
 import { useMutation } from "@tanstack/react-query";
-import { DraftObject } from "../types/util";
+import { DraftObject, TeamAvg } from "../types/util";
 import { usePatch } from '../Utils/hooks/usePatch';
-import axios from "axios";
+import axios, { AxiosResponse } from "axios";
 import '../App.css'
 
 const CharacterCard = lazy(() => import("../components/CharacterCard"));
@@ -572,40 +572,40 @@ export default function App() {
 
   const useChampionData = useChampionQuery(query);
 
+
   // Send the draft to the backend
-  const { mutate: updateGameAvg }  = useMutation((draft: DraftObject) => 
-     axios.post(`https://ourcraft.pl/game-avg/?patch=${patch}&time_label=${dataLabel}`, draft)
-  );
+  const { mutate: updateGameAvg }  = useMutation<AxiosResponse<TeamAvg>, unknown, DraftObject>({
+    mutationKey: ['gameAvg', draft],
+    mutationFn: () => axios.post(`https://ourcraft.pl/game-avg/?patch=${patch}&time_label=${dataLabel}`, draft),
+    onSuccess: ({data: teamAvg}) => {
+         // for mateusz later
+          const blueRecs = teamAvg.blue_recommendation;
+          const sortedBlueRecs = Object.entries(blueRecs).sort((a, b) => b[1] - a[1]);
+          const sortedBlueRecsJson = Object.fromEntries(sortedBlueRecs);
+
+          const redRecs = teamAvg.red_recommendation;
+          const sortedRedRecs = Object.entries(redRecs).sort((a, b) => b[1] - a[1]);
+          const sortedRedRecsJson = Object.fromEntries(sortedRedRecs);
+          console.log({ sortedBlueRecsJson, sortedRedRecsJson});
+
+          
+          setTeamavg(teamAvg);
+    },
+    onSettled: () => {
+
+      if (graphsRef.current) {
+        // graphsRef.current.scrollIntoView({ behavior: 'smooth' });
+      }
+    }
+  
+  });
 
   // Update the game average when the draft is filled
   useEffect(() => {
     if (draft) {
-      updateGameAvg(draft, {
-        onSuccess: (data) => {
-          const { data: teamAvg } = data;
-          // for mateusz later
-          // const blueRecs = teamAvg.blue_recommendation;
-          // const sortedBlueRecs = Object.entries(blueRecs).sort((a, b) => Math.floor(b[1]) - Math.floor(a[1]));
-          // const sortedBlueRecsJson = Object.fromEntries(sortedBlueRecs);
-          // console.log(sortedBlueRecsJson);
-
-          
-          setTeamavg(teamAvg);
-        },
-      });
+      updateGameAvg(draft);
     }
   }, [patch, draft, updateGameAvg, setTeamavg]); // This will trigger the effect whenever `patch` changes
-
-  // Scroll to the graphs when the draft is filled
-  useEffect(() => {
-    // Check if the draft object is filled
-    const isDraftFilled = Object.values(draft).every((value) => value !== null);
-    
-    if (isDraftFilled && graphsRef.current) {
-      // Scroll to the graphs
-      graphsRef.current.scrollIntoView({ behavior: 'smooth' });
-    }
-  }, [draft]);
 
   // fill the next null slot in the draft with the clicked champion
   function fillNextNull(clicked_champ: string, currentDraft: DraftObject) {
