@@ -1,65 +1,86 @@
-import { useDraft } from '../Utils/hooks/useDraft';
-interface TeamBansProps {
-  version: string;
-  handleRightClick: (index: number, team: "blue" | "red", type: "pick" | "ban") => void;
-}
+import { Suspense, memo } from 'react'
+import { useDraft } from '../Utils/hooks/useDraft'
+import { BannedPickSlotProps, TeamBanListProps } from '../types/team-bans'
+import useLatestVersionQuery from '../API/useLatestVersionQuery'
 
-const TeamBans = ({ version, handleRightClick }: TeamBansProps) => {
-  const { blueBans, redBans} = useDraft()
+
+const TeamBans = () => {
+  const { blueBans, redBans } = useDraft()
 
   return (
-    <div className="w-full flex flex-col lg:flex-row justify-between gap-2 mx-auto">
-      <div className={`team `}>
-        <h2>Team 1</h2>
-        <div className="banned-picks">
-          {blueBans.map((bannedPick: string | null, index: number) => (
-            <div
-              key={index + 1}
-              className={`banned-pick-slot ${bannedPick ? "filled" : ""}`}
-              onContextMenu={(event) => {
-                event.preventDefault();
-                handleRightClick(index, "blue", "ban");
-              }}
-            >
-              {bannedPick ? (
-                <img
-                  src={`https://ddragon.leagueoflegends.com/cdn/${version}/img/champion/${bannedPick}.png`}
-                  alt={bannedPick}
-                />
-              ) : (
-                <img src="no_champion.png" alt="no-champion" />
-              )}
-            </div>
-          ))}
-        </div>
-      </div>
-      <div className={`team `}>
-        <h2>Team 2</h2>
+    <div className="mx-auto flex w-full flex-col justify-between gap-2 lg:flex-row">
+      <Suspense fallback={<div className='team'></div>}>
+        <TeamBanList
+          team="blue"
+          bans={blueBans}
+        />
+      </Suspense>
+      <Suspense fallback={<div className='team'></div>}>
+        <TeamBanList
+          team="red"
+          bans={redBans}
+        />
+      </Suspense>
 
-        <div className="banned-picks">
-          {redBans.map((bannedPick: string | null, index: number) => (
-            <div
-              key={index + 1}
-              className={`banned-pick-slot ${bannedPick ? "filled" : ""}`}
-              onContextMenu={(event) => {
-                event.preventDefault();
-                handleRightClick(index, "red", "ban");
-              }}
-            >
-              {bannedPick ? (
-                <img
-                  src={`https://ddragon.leagueoflegends.com/cdn/${version}/img/champion/${bannedPick}.png`}
-                  alt={bannedPick}
-                />
-              ) : (
-                <img src="no_champion.png" alt="no-champion" />
-              )}
-            </div>
-          ))}
-        </div>
+    </div>
+  )
+}
+
+export default TeamBans
+
+const TeamBanList = memo(({
+  team,
+  bans,
+}: TeamBanListProps) => {
+   
+  const { handleRightClick } = useDraft()
+  const { data, isError } = useLatestVersionQuery()
+
+  const version = data[0] 
+  
+  return (
+    <div className="team">
+      <h2>{team === 'blue' ? 'Team 1' : 'Team 2'}</h2>
+      <div className="banned-picks">
+        {bans.map((bannedPick: string | null, index: number) => (
+          <BannedPickSlot
+            team={team}
+            key={index}
+            index={index}
+            bannedPick={bannedPick}
+            version={ isError ? "14.8.1" : version}
+            handleRightClick={handleRightClick}
+          />
+        ))}
       </div>
     </div>
-  );
-};
+)})
 
-export default TeamBans;
+const BannedPickSlot = memo(({
+  bannedPick,
+  index,
+  version,
+  team,
+  handleRightClick,
+}: BannedPickSlotProps) => {
+
+
+  const handleClick = (event: React.MouseEvent) => {
+    event.preventDefault()
+    handleRightClick(index, team, 'ban')
+  }
+
+  const imageSource = bannedPick
+    ? `https://ddragon.leagueoflegends.com/cdn/${version}/img/champion/${bannedPick}.png`
+    : 'no_champion.png'
+
+  return (
+    <div
+      key={index + 1}
+      className={`banned-pick-slot ${bannedPick ? 'filled' : ''}`}
+      onClick={handleClick}
+    >
+      <img className="w-[7rem] h-[7rem] rounded-lg  object-contain" src={imageSource} alt={bannedPick || 'no-champion'} />
+    </div>
+  )
+})

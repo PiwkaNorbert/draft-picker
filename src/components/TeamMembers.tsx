@@ -1,89 +1,98 @@
-import { useDraft } from '../Utils/hooks/useDraft';
 
-interface TeamMembersProps {
-  children: React.ReactNode;
-  version: string;
-  handleRightClick: (index: number, team: "blue" | "red", type: "pick" | "ban") => void;
-}
 
-export const TeamMembers = ({
-  children,
-  version,
-  handleRightClick,
-}: TeamMembersProps ) => {
+import { Suspense, memo } from 'react'
+import { useDraft } from '../Utils/hooks/useDraft'
+import useLatestVersionQuery from '../API/useLatestVersionQuery'
+import { cn } from '../lib/utils'
+import { MemberSlotProps, TeamMemberListProps } from '../types/team-picks'
 
-  // #TODO: on rightclick update the bans array with the selected champion since itss not recalculating the graph
-  const { bluePicks, redPicks }  = useDraft()
+const TeamMembers = () => {
+  const { bluePicks, redPicks } = useDraft()
 
   return (
     <>
-      <div className={` flex flex-col gap-y-2 justify-between lg:justify-normal  [&>*:nth-child(3)]:mb-8 `}>
-        {bluePicks.map((champion: string | null, index: number) => (
-          <div
+      <Suspense fallback={<div className='team'></div>}>
+        <TeamMemberList
+          team="blue"
+          members={bluePicks}
+        />
+      </Suspense>
+      <Suspense fallback={<div className='team'></div>}>
+        <TeamMemberList
+          team="red"
+          members={redPicks}
+        />
+      </Suspense>
+    </>
+  )
+}
+
+export default TeamMembers
+
+
+const TeamMemberList = memo(({
+  team,
+  members,
+}: TeamMemberListProps) => {
+   
+  const { handleRightClick } = useDraft()
+  const { data, isError } = useLatestVersionQuery()
+
+  const version = data[0] 
+  
+  return (
+      <div className={cn("flex flex-col gap-y-2 justify-between lg:justify-normal [&>*:nth-child(3)]:mb-8",
+        team === 'blue' ? 'order-1' : 'order-3'
+      )}>
+        {members.map((member: string | null, index: number) => (
+          <MemberSlot
+            team={team}
             key={index}
-            className={`team-member-slot relative border-2 cursor-pointer bg-white border-blue-300 rounded-lg overflow-hidden`}
-            onContextMenu={(event) => {
-              event.preventDefault();
-              handleRightClick(index, "blue", "pick");
-            }}
-          >
-           <CardAvatar version={version} champion={champion} />
-            
-          </div>
+            index={index}
+            member={member}
+            version={ isError ? "14.8.1" : version}
+            handleRightClick={handleRightClick}
+          />
         ))}
       </div>
+)})
 
-      {children}
 
-      <div className={`  flex flex-col gap-y-2 justify-between lg:justify-normal [&>*:nth-child(3)]:mb-8`}>
-        {redPicks.map((champion: string | null, index: number) => {
-          
-          return (
-          <div
-            key={index}
-            className={`team-member-slot relative border-2 bg-white border-red-300 rounded-lg  overflow-hidden`}
-            onContextMenu={(event) => {
-              event.preventDefault();
-              handleRightClick(index, "red", "pick");
-            }}
-          >
-           <CardAvatar version={version} champion={champion} />
-          </div>
-        )})}
-      </div>
-    </>
-  );
-};
 
-const CardAvatar = ({ version, champion }: { version: string; champion: string | null}) => {
+const MemberSlot = memo(({
+  member,
+  index,
+  version,
+  team,
+  handleRightClick,
+}: MemberSlotProps) => {
 
-  if (!champion || champion === null) {
-    return <EmptyCard />
+  const handleClick = (event: React.MouseEvent) => {
+    event.preventDefault()
+    handleRightClick(index, team, 'pick')
   }
-  return (
-    <>
-    <img
-      src={`https://ddragon.leagueoflegends.com/cdn/${version}/img/champion/${champion}.png`}
-      alt={champion}
-      width={112}
-      height={112}
-      className="w-[7rem] h-[7rem]  object-cover"
-    />
-      <span className='absolute bottom-0 left-0 rounded-tr-md rounded-bl-md px-1 text-xs bg-black text-white shadow-black [text-shadow:_0_1px_3px_var(--tw-shadow-color)] '>
-        {champion}
-      </span>
-    </>
 
-  )
-}
+  const imageSource = member
+    ? `https://ddragon.leagueoflegends.com/cdn/${version}/img/champion/${member}.png`
+    : 'no_champion.png'
 
-const EmptyCard = () => {
   return (
-    <img
-      src="no_champion.png"
-      alt="no-champion"
-      width={112}
-      height={112}
-      className="w-[7rem] h-[7rem] rounded-lg  object-contain" ></img>
+    <div
+      key={index + 1}
+      className={cn("team-member-slot relative border-2 bg-white hover:shadow-lg transition-shadow duration-300 ease-in-out rounded-lg  overflow-hidden cursor-pointer",
+        member ? 'filled' : '',
+        team === 'blue' ? 'border-blue-500 hover:border-selected ' : 'border-red-500 hover:border-selected ',
+        
+      )}
+      onClick={handleClick}
+    >
+      <img 
+        className="w-[7rem] h-[7rem] object-cover"
+        width={112}
+        height={112} 
+        src={imageSource} 
+        alt={member || 'no-member'}
+      />
+    </div>
   )
-}
+})

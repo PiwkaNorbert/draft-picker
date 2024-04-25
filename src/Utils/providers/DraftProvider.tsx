@@ -13,6 +13,7 @@ interface DraftContextType {
   setDraft: React.Dispatch<React.SetStateAction<DraftObject>>;
   teamAvg: TeamAvg | null;
   setTeamavg: React.Dispatch<React.SetStateAction<TeamAvg | null>>;
+  handleRightClick: (index: number, team: "red" | "blue", type: "ban" | "pick") => void;
 }
 
 // Create the context
@@ -78,13 +79,27 @@ export const DraftProvider = ({ children }: {children: React.ReactNode}) => {
       .map(([, value]) => value);
   };
 
+  const handleRightClick = (
+    index: number,
+    team: "red" | "blue",
+    type: "ban" | "pick"
+  ) => {
+    if (["blue", "red"].includes(team) && ["ban", "pick"].includes(type)) {
+      setDraft({
+        ...draft,
+        [`${team.charAt(0).toUpperCase() + team.slice(1)}_${type}${index + 1}`]:
+          null,
+      });
+    }
+  };
+
   const blueBans = getDraftEntries(draft, "Blue_ban") as string[];
   const redBans = getDraftEntries(draft, "Red_ban") as string[];
   const bluePicks = getDraftEntries(draft, "Blue_pick") as string[];
   const redPicks = getDraftEntries(draft, "Red_pick") as string[];
 
   return (
-    <DraftContext.Provider value={{ draft, redBans, blueBans, redPicks, bluePicks, setDraft, teamAvg, setTeamavg}}>
+    <DraftContext.Provider value={{ draft, redBans, blueBans, redPicks, bluePicks, setDraft, teamAvg, setTeamavg, handleRightClick}}>
       {children}
     </DraftContext.Provider>
   );

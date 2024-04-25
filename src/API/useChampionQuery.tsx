@@ -1,12 +1,11 @@
-import { useQuery } from "@tanstack/react-query";
-import axios from "axios";
+import { useSuspenseQuery, useQueryClient } from "@tanstack/react-query";
+import axios, { AxiosError } from "axios";
 import { filterChampions } from "../Utils/filterChampions";
 import { Root } from "../types/data";
 import { QueryParams } from "../types/util";
-import { getLatestVersion } from "./fetch";
 
 
-export async function getPatchData (version: string, signal?: AbortSignal): Promise<Root> {
+export async function getPatchData (version: string, signal?: AbortSignal) {
     const { data, status } = await axios.get(
         `https://ddragon.leagueoflegends.com/cdn/${version}/data/en_US/champion.json`,
         {
@@ -21,16 +20,15 @@ export async function getPatchData (version: string, signal?: AbortSignal): Prom
 }
 
 
-
 const useChampionQuery = (query?: QueryParams) => {
 
-  const { data: version } = useQuery<string[]>({ 
-    queryKey: ["latestPatch"],
-    queryFn: ({signal}) => getLatestVersion(signal), enabled: !!query });
+  const queryClient = useQueryClient();
+  const latestVersionRef = queryClient.getQueryData<string[]>(["latestVersion"]);
 
-  const latestVersion = version?.[0] as string;
+  const latestVersion = latestVersionRef?.[0] || "14.8.1";
 
-  const selectChampionData = (data: Root|undefined) => {
+
+  const selectChampionData = (data: Root) => {
     const result = filterChampions(
       data,
       query
@@ -38,13 +36,11 @@ const useChampionQuery = (query?: QueryParams) => {
     return result 
   }
 
-  return useQuery<Root|undefined>({
+  return useSuspenseQuery<Root, AxiosError>({
     queryKey: ["champions", latestVersion],
     queryFn: ({ signal }) => getPatchData(latestVersion, signal),
-    
-      refetchOnWindowFocus: false,
-      enabled: !!latestVersion && !!query && latestVersion !== undefined,
-      select: selectChampionData
+    refetchOnWindowFocus: false,
+    select: selectChampionData
     }
   );
 

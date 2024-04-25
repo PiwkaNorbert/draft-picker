@@ -2,10 +2,10 @@ import { Root, Data } from "../types/data";
 import { QueryParams } from "../types/util";
 
 export const filterChampions = (
-  data?: Root,
+  data: Root,
   query?: QueryParams
-): Root | undefined => {
-  if (!data) return undefined;
+): Root => {
+  if (!data) return data;
   if (!query) return data;
 
   const { search, tags = [] } = query;

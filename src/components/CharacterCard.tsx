@@ -33,25 +33,21 @@ export default function CharacterCard({
   const characterInRed = isCharacterInRed(character);
   const characterInBlue = isCharacterInBlue(character);
   const disableCharacter = isCharacterDisabled(character);
+  const isDraftFull = Object.values(draft).every((champ) => champ !== null);
 
 
   return (
     <div
       id={character.name}
-      className="justify-self-center w-full lg:w-20 flex flex-col items-center gap-1 group cursor-pointer  hover:text-selected"
+      className="justify-self-center w-full lg:w-20 flex flex-col items-center gap-1 group  hover:text-selected"
       onClick={() => {
-        if (disableCharacter) return;
+        if (disableCharacter) {
+          return removeFromDraft(character.id, draft);
+        }
         fillNextNull(character.id, draft);
       }}
-      onContextMenu={(event) => {
-        event.preventDefault();
-        removeFromDraft(character.id, draft);
-      }}
     >
-      <div className={cn(
-        'relative w-full h-full aspect-square rounded-lg border-2 group-hover:border-6 group-hover:border-selected', 
-        disableCharacter ? "opacity-50 " : ""
-        )}>
+      <div className='relative w-full h-full aspect-square rounded-lg border-2 group-hover:border-6 group-hover:border-selected'>
 
         <img
           src={`https://ddragon.leagueoflegends.com/cdn/${version}/img/champion/${character.id}.png`}
@@ -62,16 +58,21 @@ export default function CharacterCard({
           loading={'lazy'}
         />
         <div
-          className={cn("absolute inset-0",
-           characterInRed ? "bg-red-400 text-red-400" : 
-           characterInBlue ? "bg-blue-400 text-blue-400" : "",
-           disableCharacter ? " rounded-lg opacity-30" : ""
+          className={cn("absolute inset-0 cursor-pointer ",
+          isDraftFull ? "bg-gray-400 opacity-80 cursor-default pointer-events-none" : "",
+          characterInRed ? "!bg-red-400  !opacity-30" : 
+          characterInBlue ? "!bg-blue-400 !opacity-30" : "",
+          //  disableCharacter ? " rounded-lg opacity-30" : "",
           )}
         />
       </div>
 
       <p
-        className={`whitespace-nowrap text-pretty lg:text-nowrap text-xs min-[500px]:text-sm md:text-base ${disableCharacter ? "opacity-50 " : ""}`}
+        className={cn("whitespace-nowrap text-pretty lg:text-nowrap text-xs min-[500px]:text-sm md:text-base",
+          isDraftFull ? "text-gray-800 opacity-80 cursor-default pointer-events-none" : "",
+          characterInRed ? "!text-red-400 " : 
+          characterInBlue ? "!text-blue-400 " : "",
+        )}
       >
         {character.name}
       </p>
