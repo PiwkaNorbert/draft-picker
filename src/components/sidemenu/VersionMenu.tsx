@@ -29,7 +29,7 @@ export const VersionMenu = () => {
         <SelectValue placeholder="Patch" />
       </SelectTrigger>
       <SelectContent>
-        {data.length > 0 ? (
+        {data && data.length > 0 ? (
           data.map((patch: string) => (
             <SelectItem
               onChange={() => {

@@ -18,12 +18,15 @@ export async function getAvgChampion(patch: string,  timeLabel: string, signal?:
 
 const useChampionAvgQuery = (patch: string = "recent", timeLabel: string = "all") => {
 
-  const { data: version } = useQuery(["latestPatch"], ({ signal }) => getLatestVersion(signal), { enabled: !!patch });
-  const latestVersion = version?.[0];
+  const { data: version } = useQuery<string[]>({ 
+    queryKey: ["latestPatch"],
+    queryFn: ({signal}) => getLatestVersion(signal), enabled: !!patch });
 
+  const latestVersion = version?.[0] as string; 
 
-
-  const useChampionAvgData = useQuery<ChampionListData[]>(["champions-avg", patch, timeLabel], ({ signal }) => getAvgChampion(patch, timeLabel, signal), {
+  const useChampionAvgData = useQuery<ChampionListData[]>({
+    queryKey :["champions-avg", patch, timeLabel], 
+    queryFn: ({ signal }) => getAvgChampion(patch, timeLabel, signal),
     enabled: !!latestVersion,
     placeholderData: placeholderData
   });

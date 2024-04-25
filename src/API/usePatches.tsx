@@ -15,7 +15,9 @@ export async function getPatches(signal?: AbortSignal) {
 }
 
 const usePatches = () =>
-  useQuery(["patches"], ({ signal }) => getPatches(signal), {
+  useQuery<string[]>({
+    queryKey: ["patches"],
+    queryFn: ({ signal }) => getPatches(signal), 
     enabled: !!fetch,
     placeholderData: [
       "recent",

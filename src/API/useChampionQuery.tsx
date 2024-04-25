@@ -24,10 +24,11 @@ export async function getPatchData (version: string, signal?: AbortSignal): Prom
 
 const useChampionQuery = (query?: QueryParams) => {
 
+  const { data: version } = useQuery<string[]>({ 
+    queryKey: ["latestPatch"],
+    queryFn: ({signal}) => getLatestVersion(signal), enabled: !!query });
 
-  const { data: version } = useQuery(["latestPatch"], ({ signal }) => getLatestVersion(signal), { enabled: !!fetch });
-  const latestVersion = version?.[0];
-
+  const latestVersion = version?.[0] as string;
 
   const selectChampionData = (data: Root|undefined) => {
     const result = filterChampions(
@@ -37,12 +38,12 @@ const useChampionQuery = (query?: QueryParams) => {
     return result 
   }
 
-  return useQuery<Root|undefined>(
-    ["champions", latestVersion],
-    ({ signal }) => getPatchData(latestVersion, signal),
-    {
+  return useQuery<Root|undefined>({
+    queryKey: ["champions", latestVersion],
+    queryFn: ({ signal }) => getPatchData(latestVersion, signal),
+    
       refetchOnWindowFocus: false,
-      enabled: !!latestVersion,
+      enabled: !!latestVersion && !!query && latestVersion !== undefined,
       select: selectChampionData
     }
   );
